@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class StayDeleteService {
@@ -58,9 +59,16 @@ public class StayDeleteService {
     public ResponseEntity deleteInMongodb(String env) {
         File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();
         Yaml yaml = new Yaml();
-
+        Tenant tenantTemp = null;
+        try {
+            File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
+            tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
+        } catch (Exception e) {
+            System.out.println("cannot initiate the delete operation");
+        }
         try {
             Map<String, Map<String, ArrayList<String>>> yamlMap = yaml.load(new FileInputStream(ymlFile));
+            Tenant finalTenantTemp = tenantTemp;
             yamlMap.entrySet().stream().parallel().forEach(entry -> {
                 String collectionName = entry.getKey();
                 String tenantPath = "";
@@ -71,35 +79,33 @@ public class StayDeleteService {
                 if (entry.getValue().get("propertyId") != null) {
                     propertyPath = entry.getValue().get("propertyId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
                 }
-                File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
-                Tenant tenantTemp = null;
-                try {
+                Criteria criteria = null;
+                if (entry.getKey().equalsIgnoreCase("config") || entry.getKey().equalsIgnoreCase("configEvents")) {
+                    assert finalTenantTemp != null;
+                    Set<String> tenantAndProperty=finalTenantTemp.getProperty();
+                    tenantAndProperty.addAll(finalTenantTemp.getTenant());
+                    String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
+                    criteria = Criteria.where("path").regex(regex);
 
-                    tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
-                } catch (Exception e) {
-                    System.out.println("cannot initiate the delete operation");
-                }
-                Criteria criteria;
-                if (!tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
+                } else if (!tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
                     criteria = new Criteria().orOperator(
-                            Criteria.where(tenantPath).in(tenantTemp.getTenant()),
-                            Criteria.where(propertyPath).in(tenantTemp.getProperty())
+                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()),
+                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
                     );
                 } else if (tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
                     criteria = new Criteria().orOperator(
 
-                            Criteria.where(propertyPath).in(tenantTemp.getProperty())
+                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
                     );
                 } else {
                     criteria = new Criteria().orOperator(
-                            Criteria.where(tenantPath).in(tenantTemp.getTenant()));
+                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()));
                 }
 
                 Query query = new Query(criteria);
                 DeleteResult deleteResult = mongoTemplate.remove(query, Object.class, collectionName);
                 if (deleteResult.getDeletedCount() == 0) logger.info("No doucuments found for the " + collectionName);
-                else
-                    logger.info(String.format("The %s documents deleted in the %s collection", deleteResult.getDeletedCount(), collectionName));
+                else logger.info(String.format("The %s documents deleted in the %s collection", deleteResult.getDeletedCount(), collectionName));
 
             });
 
@@ -154,7 +160,7 @@ public class StayDeleteService {
 
         try {
             Tenant temp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
-            logger.info(String.format("Data returned from the cache for the %s environment is %s ",env,temp.toString()));
+            logger.info(String.format("Data returned from the cache for the %s environment is %s ", env, temp.toString()));
             return temp.toString();
         } catch (IOException e) {
             return "No data has been found in the local cache";
@@ -163,7 +169,7 @@ public class StayDeleteService {
     }
 
     public Set<String> getAllCollections(String env) {
-        logger.info("All collections information has been retrieved for the {} environment",env);
+        logger.info("All collections information has been retrieved for the {} environment", env);
         return mongoTemplate.getCollectionNames();
     }
 }

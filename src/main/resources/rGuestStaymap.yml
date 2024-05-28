@@ -1,3 +1,9 @@
+config:
+ path:
+  - tenant
+configEvents:
+ path:
+  - tenant
 accountBalances:
  tenantId:
   - _id

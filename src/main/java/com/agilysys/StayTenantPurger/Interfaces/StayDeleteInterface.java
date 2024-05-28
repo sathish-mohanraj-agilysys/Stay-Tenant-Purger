@@ -20,7 +20,7 @@ public interface StayDeleteInterface {
     String clearDataInLocal(@PathVariable("environment") String env);
 
     @GetMapping("/delete/environment/{environment}/")
-    String getData(@PathVariable("environment") String env);
+    String getDataFromCache(@PathVariable("environment") String env);
 
     @PostMapping("/delete/environment/{environment}/dropCollection")
     String dropCollections(@PathVariable("environment") String env);

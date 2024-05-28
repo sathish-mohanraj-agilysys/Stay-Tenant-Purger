@@ -41,7 +41,7 @@ public class Controller implements StayDeleteInterface {
         return stayDeleteService.clearInLocal(env);
     }
 
-    public String getData(@PathVariable("environment") String env) {
+    public String getDataFromCache(@PathVariable("environment") String env) {
         return stayDeleteService.getDataFromCache(env);
     }
 
