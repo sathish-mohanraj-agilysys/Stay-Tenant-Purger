@@ -66,8 +66,12 @@ public class StayDeleteService {
         } catch (Exception e) {
             System.out.println("cannot initiate the delete operation");
         }
+        Map<String, Map<String, ArrayList<String>>> yamlMap;
         try {
-            Map<String, Map<String, ArrayList<String>>> yamlMap = yaml.load(new FileInputStream(ymlFile));
+           yamlMap = yaml.load(new FileInputStream(ymlFile));
+           if( yamlMap.size()!=getAllCollections(env).size()){
+               logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb",yamlMap.size(),getAllCollections(env).size());
+           }
             Tenant finalTenantTemp = tenantTemp;
             yamlMap.entrySet().stream().parallel().forEach(entry -> {
                 String collectionName = entry.getKey();
@@ -125,7 +129,7 @@ public class StayDeleteService {
             logger.error("Cannot able to back up the data");
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb",yamlMap.size(),getAllCollections(env).size(),env),HttpStatus.OK);
     }
 
 
