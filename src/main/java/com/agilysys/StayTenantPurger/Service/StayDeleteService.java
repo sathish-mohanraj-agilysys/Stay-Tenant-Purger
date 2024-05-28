@@ -125,6 +125,10 @@ public class StayDeleteService {
             backupTenant.getProperty().addAll(resourceTenant.getProperty());
             objectMapper.writeValue(backUpFile, backupTenant);
             logger.info("Deleted tenant property is successfully backed up ");
+            resourceTenant.getTenant().clear();
+            resourceTenant.getProperty().clear();
+            objectMapper.writeValue(resourceFile,resourceTenant);
+            logger.info("Local Cache is successfully cleaned");
         } catch (Exception e) {
             logger.error("Cannot able to back up the data");
         }
