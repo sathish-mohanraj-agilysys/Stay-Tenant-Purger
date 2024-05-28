@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Set;
+
 @RestController
 public class Controller implements StayDeleteInterface {
 
@@ -35,7 +37,7 @@ public class Controller implements StayDeleteInterface {
         return stayDeleteService.deleteInMongodb(env);
     }
 
-    public String clearData(@PathVariable("environment") String env) {
+    public String clearDataInLocal(@PathVariable("environment") String env) {
         return stayDeleteService.clearInLocal(env);
     }
 
@@ -45,6 +47,11 @@ public class Controller implements StayDeleteInterface {
 
     public String dropCollections(@PathVariable("environment") String env) {
         return stayDeleteService.dropAllCollections(env);
+    }
+
+    @Override
+    public Set<String> getAllCollections(String env) {
+        return stayDeleteService.getAllCollections(env);
     }
 }
 

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class StayDeleteService {
@@ -159,5 +160,10 @@ public class StayDeleteService {
             return "No data has been found in the local cache";
         }
 
+    }
+
+    public Set<String> getAllCollections(String env) {
+        logger.info("All collections information has been retrieved for the {} environment",env);
+        return mongoTemplate.getCollectionNames();
     }
 }
