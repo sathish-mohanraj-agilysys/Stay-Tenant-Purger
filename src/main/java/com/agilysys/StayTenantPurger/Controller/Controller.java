@@ -7,7 +7,6 @@ import com.agilysys.StayTenantPurger.Service.StayDeleteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,9 +24,6 @@ public class Controller implements StayDeleteInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-    public Controller(MongoTemplate mongoTemplate) {
-
-    }
 
     public String deleteTenant(@RequestBody Tenant tenant, @PathVariable("environment") String env) {
         return stayDeleteService.storData(tenant, env);

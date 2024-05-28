@@ -6,6 +6,7 @@ import com.mongodb.client.result.DeleteResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,6 +33,14 @@ public class StayDeleteService {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
+    @Qualifier("mongoTemplateqa03")
+    private MongoTemplate mongoTemplateQa03;
+    @Autowired
+    @Qualifier("mongoTemplateLab005")
+    private MongoTemplate mongoTemplateLab005;
+    @Autowired
+    @Qualifier("mongoTemplateLab000")
+    private MongoTemplate mongoTemplateLab000;
     private MongoTemplate mongoTemplate;
 
 
@@ -57,6 +66,7 @@ public class StayDeleteService {
     }
 
     public ResponseEntity deleteInMongodb(String env) {
+        setMongoTemplate(env);
         File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();
         Yaml yaml = new Yaml();
         Tenant tenantTemp = null;
@@ -68,10 +78,10 @@ public class StayDeleteService {
         }
         Map<String, Map<String, ArrayList<String>>> yamlMap;
         try {
-           yamlMap = yaml.load(new FileInputStream(ymlFile));
-           if( yamlMap.size()!=getAllCollections(env).size()){
-               logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb",yamlMap.size(),getAllCollections(env).size());
-           }
+            yamlMap = yaml.load(new FileInputStream(ymlFile));
+            if (yamlMap.size() != getAllCollections(env).size()) {
+                logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", yamlMap.size(), getAllCollections(env).size());
+            }
             Tenant finalTenantTemp = tenantTemp;
             yamlMap.entrySet().stream().parallel().forEach(entry -> {
                 String collectionName = entry.getKey();
@@ -86,7 +96,7 @@ public class StayDeleteService {
                 Criteria criteria = null;
                 if (entry.getKey().equalsIgnoreCase("config") || entry.getKey().equalsIgnoreCase("configEvents")) {
                     assert finalTenantTemp != null;
-                    Set<String> tenantAndProperty=finalTenantTemp.getProperty();
+                    Set<String> tenantAndProperty = finalTenantTemp.getProperty();
                     tenantAndProperty.addAll(finalTenantTemp.getTenant());
                     String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
                     criteria = Criteria.where("path").regex(regex);
@@ -109,7 +119,8 @@ public class StayDeleteService {
                 Query query = new Query(criteria);
                 DeleteResult deleteResult = mongoTemplate.remove(query, Object.class, collectionName);
                 if (deleteResult.getDeletedCount() == 0) logger.info("No doucuments found for the " + collectionName);
-                else logger.info(String.format("The %s documents deleted in the %s collection", deleteResult.getDeletedCount(), collectionName));
+                else
+                    logger.info(String.format("The %s documents deleted in the %s collection", deleteResult.getDeletedCount(), collectionName));
 
             });
 
@@ -127,13 +138,13 @@ public class StayDeleteService {
             logger.info("Deleted tenant property is successfully backed up ");
             resourceTenant.getTenant().clear();
             resourceTenant.getProperty().clear();
-            objectMapper.writeValue(resourceFile,resourceTenant);
+            objectMapper.writeValue(resourceFile, resourceTenant);
             logger.info("Local Cache is successfully cleaned");
         } catch (Exception e) {
             logger.error("Cannot able to back up the data");
         }
 
-        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb",yamlMap.size(),getAllCollections(env).size(),env),HttpStatus.OK);
+        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb", yamlMap.size(), getAllCollections(env).size(), env), HttpStatus.OK);
     }
 
 
@@ -156,6 +167,7 @@ public class StayDeleteService {
 
 
     public String dropAllCollections(String env) {
+        setMongoTemplate(env);
         for (String collection : mongoTemplate.getCollectionNames()) {
             mongoTemplate.dropCollection(collection);
             logger.info(String.format("Dropped the %s collection", collection));
@@ -177,7 +189,25 @@ public class StayDeleteService {
     }
 
     public Set<String> getAllCollections(String env) {
+        setMongoTemplate(env);
         logger.info("All collections information has been retrieved for the {} environment", env);
         return mongoTemplate.getCollectionNames();
     }
+
+    public void setMongoTemplate(String env) {
+        switch (env) {
+            case "qa03":
+                mongoTemplate = mongoTemplateQa03;
+                break;
+            case "005":
+                mongoTemplate = mongoTemplateLab005;
+                break;
+            case "000":
+                mongoTemplate = mongoTemplateLab000;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid environment: " + env);
+        }
+    }
+
 }
