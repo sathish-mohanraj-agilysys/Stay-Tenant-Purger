@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,6 +66,7 @@ public class StayDeleteService {
     }
 
     public ResponseEntity deleteInMongodb(String env) {
+        Map<String ,Integer> deletedOut=new HashMap<>();
         MongoTemplate mongoTemplate = getMongoTemplate(env);
         File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();
         Yaml yaml = new Yaml();
@@ -97,6 +99,10 @@ public class StayDeleteService {
                     assert finalTenantTemp != null;
                     Set<String> tenantAndProperty = finalTenantTemp.getProperty();
                     tenantAndProperty.addAll(finalTenantTemp.getTenant());
+                    if(tenantAndProperty.size()==0){
+                        logger.info("No doucuments found for the " + collectionName);
+                        return;
+                    }
                     String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
                     criteria = Criteria.where("path").regex(regex);
 
@@ -117,6 +123,7 @@ public class StayDeleteService {
 
                 Query query = new Query(criteria);
                 DeleteResult deleteResult = mongoTemplate.remove(query, Object.class, collectionName);
+                 deletedOut.put(collectionName, (int) deleteResult.getDeletedCount());
                 if (deleteResult.getDeletedCount() == 0) logger.info("No doucuments found for the " + collectionName);
                 else
                     logger.info(String.format("The %s documents deleted in the %s collection", deleteResult.getDeletedCount(), collectionName));
@@ -143,7 +150,7 @@ public class StayDeleteService {
             logger.error("Cannot able to back up the data");
         }
 
-        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb", yamlMap.size(), getAllCollections(env).size(), env), HttpStatus.OK);
+        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb /n"+deletedOut.toString(), yamlMap.size(), getAllCollections(env).size(), env), HttpStatus.OK);
     }
 
 
