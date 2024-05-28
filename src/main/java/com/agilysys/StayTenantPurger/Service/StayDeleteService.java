@@ -41,7 +41,6 @@ public class StayDeleteService {
     @Autowired
     @Qualifier("mongoTemplateLab000")
     private MongoTemplate mongoTemplateLab000;
-    private MongoTemplate mongoTemplate;
 
 
     private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
@@ -66,7 +65,7 @@ public class StayDeleteService {
     }
 
     public ResponseEntity deleteInMongodb(String env) {
-        setMongoTemplate(env);
+        MongoTemplate mongoTemplate = getMongoTemplate(env);
         File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();
         Yaml yaml = new Yaml();
         Tenant tenantTemp = null;
@@ -167,7 +166,7 @@ public class StayDeleteService {
 
 
     public String dropAllCollections(String env) {
-        setMongoTemplate(env);
+        MongoTemplate mongoTemplate = getMongoTemplate(env);
         for (String collection : mongoTemplate.getCollectionNames()) {
             mongoTemplate.dropCollection(collection);
             logger.info(String.format("Dropped the %s collection", collection));
@@ -189,25 +188,26 @@ public class StayDeleteService {
     }
 
     public Set<String> getAllCollections(String env) {
-        setMongoTemplate(env);
+        MongoTemplate mongoTemplate = getMongoTemplate(env);
         logger.info("All collections information has been retrieved for the {} environment", env);
         return mongoTemplate.getCollectionNames();
     }
 
-    public void setMongoTemplate(String env) {
+    public MongoTemplate getMongoTemplate(String env) {
         switch (env) {
             case "qa03":
-                mongoTemplate = mongoTemplateQa03;
-                break;
+                return mongoTemplateQa03;
+
             case "005":
-                mongoTemplate = mongoTemplateLab005;
-                break;
+                return mongoTemplateLab005;
+
             case "000":
-                mongoTemplate = mongoTemplateLab000;
-                break;
+                return mongoTemplateLab000;
+
             default:
                 throw new IllegalArgumentException("Invalid environment: " + env);
         }
+
     }
 
 }
