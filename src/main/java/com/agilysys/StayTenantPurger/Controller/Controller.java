@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -58,6 +59,12 @@ public class Controller implements StayDeleteInterface {
     public Set<String> getAllCollections(String env) {
         ensureCaching(env);
         return stayDeleteService.getAllCollections(env);
+    }
+
+
+    public Map<String, Integer> getDocumentCount(String env) {
+        ensureCaching(env);
+        return stayDeleteService.getDocumentCount(env);
     }
 
     private void ensureCaching(String env) {

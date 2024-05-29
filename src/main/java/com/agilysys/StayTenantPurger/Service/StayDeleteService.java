@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -199,6 +200,16 @@ public class StayDeleteService {
         logger.info("All collections information has been retrieved for the {} environment", env);
         return mongoTemplate.getCollectionNames();
     }
+    public  Map<String,Integer> getDocumentCount(String env) {
+        MongoTemplate mongoTemplate = getMongoTemplate(env);
+        Map<String,Integer> data=new HashMap<>();
+        mongoTemplate.getCollectionNames().stream().parallel().forEach(x->{
+            long count=mongoTemplate.getCollection(x).countDocuments();
+            logger.info("The {} documents present in {} collection",count,x);
+            data.put(x, (int) count);
+        });
+        return data;
+    }
 
     public MongoTemplate getMongoTemplate(String env) {
         switch (env) {
@@ -216,5 +227,6 @@ public class StayDeleteService {
         }
 
     }
+
 
 }
