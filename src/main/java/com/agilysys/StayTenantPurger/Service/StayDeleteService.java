@@ -160,6 +160,72 @@ public class StayDeleteService {
         }
 
     }
+    public String getDocumentCountFromCacheDetails(String env) {
+        Map<String, Integer> documentCount = new HashMap<>();
+        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();
+        Yaml yaml = new Yaml();
+        Tenant tenantTemp = null;
+        try {
+            File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
+            tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
+        } catch (Exception e) {
+          logger.error("Cannot get the details");
+        }
+        Map<String, Map<String, ArrayList<String>>> yamlMap;
+        try {
+            yamlMap = yaml.load(new FileInputStream(ymlFile));
+            if (yamlMap.size() != getAllCollections(env).size()) {
+                logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", yamlMap.size(), getAllCollections(env).size());
+            }
+            Tenant finalTenantTemp = tenantTemp;
+            yamlMap.entrySet().stream().parallel().forEach(entry -> {
+                String collectionName = entry.getKey();
+                String tenantPath = "";
+                String propertyPath = "";
+                if (entry.getValue().get("tenantId") != null) {
+                    tenantPath = entry.getValue().get("tenantId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
+                }
+                if (entry.getValue().get("propertyId") != null) {
+                    propertyPath = entry.getValue().get("propertyId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
+                }
+                Criteria criteria = null;
+                if (entry.getKey().equalsIgnoreCase("config") || entry.getKey().equalsIgnoreCase("configEvents")) {
+                    assert finalTenantTemp != null;
+                    Set<String> tenantAndProperty = finalTenantTemp.getProperty();
+                    tenantAndProperty.addAll(finalTenantTemp.getTenant());
+                    if (tenantAndProperty.size() == 0) {
+                        logger.info("No doucuments found for the " + collectionName);
+                        return;
+                    }
+                    String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
+                    criteria = Criteria.where("path").regex(regex);
+
+                } else if (!tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
+                    criteria = new Criteria().orOperator(
+                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()),
+                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
+                    );
+                } else if (tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
+                    criteria = new Criteria().orOperator(
+
+                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
+                    );
+                } else {
+                    criteria = new Criteria().orOperator(
+                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()));
+                }
+
+                Query query = new Query(criteria);
+                long count = mongoTemplate.count(query, collectionName);
+                documentCount.put(collectionName, (int) count);
+                   });
+            return documentCount.toString();
+
+        } catch (FileNotFoundException e) {
+            return "Cannot make operation";
+        }
+    }
 
 
     public String dropAllCollections(String env) {

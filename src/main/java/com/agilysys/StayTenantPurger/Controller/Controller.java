@@ -51,6 +51,11 @@ public class Controller implements StayDeleteInterface {
         return stayDeleteService.getDataFromCache(env);
     }
 
+    @Override
+    public String getDocumentCountFromCache(String env) {
+        return stayDeleteService.getDocumentCountFromCacheDetails(env);
+    }
+
     public String dropCollections(@PathVariable("environment") String env) {
         ensureCaching(env);
         return stayDeleteService.dropAllCollections(env);

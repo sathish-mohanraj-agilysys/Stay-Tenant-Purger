@@ -25,7 +25,7 @@ public class Tenant {
 
     @Override
     public String toString() {
-        return "Tenant{" +
+        return "{" +
                 "tenant=" + tenant +
                 ", property=" + property +
                 '}';
