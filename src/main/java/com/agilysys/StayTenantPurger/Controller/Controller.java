@@ -76,7 +76,7 @@ public class Controller implements StayDeleteInterface {
                 objectMapper.writeValue(resourceFile, new Tenant());
             }
             if (!backUpFile.exists()) {
-                backUpFile.createNewFile();
+                if(!backUpFile.createNewFile())throw new RuntimeException("Cannot proceed further");
                 objectMapper.writeValue(backUpFile, new Tenant());
             }
 
