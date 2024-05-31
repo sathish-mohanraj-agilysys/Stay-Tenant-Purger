@@ -7,14 +7,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 @Component
 public class ScheduledTasks {
     @Autowired
     private StayDeleteService stayDeleteService;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private String[] env = new String[]{"000", "005"};
 
-    @Scheduled(cron = "0 59 23 ? * SUN")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void weeklyTaskinitiated() {
-        logger.info("Weekly Task initiated");
+        logger.info("Daily Task initiated");
+        Arrays.stream(env).forEach(x -> {
+            stayDeleteService.deleteInMongodb(x);
+            logger.info("The {} environment cleaned up",x);
+        });
     }
 }
