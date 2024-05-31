@@ -1,13 +1,12 @@
 package com.agilysys.StayTenantPurger.Service;
 
 import com.agilysys.StayTenantPurger.DAO.Tenant;
+import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.DeleteResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,18 +29,9 @@ import java.util.stream.Collectors;
 @Service
 public class StayDeleteService {
     @Autowired
-    ResourceLoader resourceLoader;
-    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    @Qualifier("mongoTemplateqa03")
-    private MongoTemplate mongoTemplateQa03;
-    @Autowired
-    @Qualifier("mongoTemplateLab005")
-    private MongoTemplate mongoTemplateLab005;
-    @Autowired
-    @Qualifier("mongoTemplateLab000")
-    private MongoTemplate mongoTemplateLab000;
+    private MongoTemplateFactory mongoTemplateFactory;
 
 
     private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
@@ -67,8 +56,8 @@ public class StayDeleteService {
     }
 
     public ResponseEntity deleteInMongodb(String env) {
-        Map<String ,Integer> deletedOut=new HashMap<>();
-        MongoTemplate mongoTemplate = getMongoTemplate(env);
+        Map<String, Integer> deletedOut = new HashMap<>();
+        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
         File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();
         Yaml yaml = new Yaml();
         Tenant tenantTemp = null;
@@ -100,7 +89,7 @@ public class StayDeleteService {
                     assert finalTenantTemp != null;
                     Set<String> tenantAndProperty = finalTenantTemp.getProperty();
                     tenantAndProperty.addAll(finalTenantTemp.getTenant());
-                    if(tenantAndProperty.size()==0){
+                    if (tenantAndProperty.size() == 0) {
                         logger.info("No doucuments found for the " + collectionName);
                         return;
                     }
@@ -124,7 +113,7 @@ public class StayDeleteService {
 
                 Query query = new Query(criteria);
                 DeleteResult deleteResult = mongoTemplate.remove(query, Object.class, collectionName);
-                 deletedOut.put(collectionName, (int) deleteResult.getDeletedCount());
+                deletedOut.put(collectionName, (int) deleteResult.getDeletedCount());
                 if (deleteResult.getDeletedCount() == 0) logger.info("No doucuments found for the " + collectionName);
                 else
                     logger.info(String.format("The %s documents deleted in the %s collection", deleteResult.getDeletedCount(), collectionName));
@@ -151,7 +140,7 @@ public class StayDeleteService {
             logger.error("Cannot able to back up the data");
         }
 
-        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb /n"+deletedOut.toString(), yamlMap.size(), getAllCollections(env).size(), env), HttpStatus.OK);
+        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb /n" + deletedOut.toString(), yamlMap.size(), getAllCollections(env).size(), env), HttpStatus.OK);
     }
 
 
@@ -174,7 +163,7 @@ public class StayDeleteService {
 
 
     public String dropAllCollections(String env) {
-        MongoTemplate mongoTemplate = getMongoTemplate(env);
+        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
         for (String collection : mongoTemplate.getCollectionNames()) {
             mongoTemplate.dropCollection(collection);
             logger.info(String.format("Dropped the %s collection", collection));
@@ -196,36 +185,20 @@ public class StayDeleteService {
     }
 
     public Set<String> getAllCollections(String env) {
-        MongoTemplate mongoTemplate = getMongoTemplate(env);
+        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
         logger.info("All collections information has been retrieved for the {} environment", env);
         return mongoTemplate.getCollectionNames();
     }
-    public  Map<String,Integer> getDocumentCount(String env) {
-        MongoTemplate mongoTemplate = getMongoTemplate(env);
-        Map<String,Integer> data=new HashMap<>();
-        mongoTemplate.getCollectionNames().stream().parallel().forEach(x->{
-            long count=mongoTemplate.getCollection(x).countDocuments();
-            logger.info("The {} documents present in {} collection",count,x);
+
+    public Map<String, Integer> getDocumentCount(String env) {
+        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        Map<String, Integer> data = new HashMap<>();
+        mongoTemplate.getCollectionNames().stream().parallel().forEach(x -> {
+            long count = mongoTemplate.getCollection(x).countDocuments();
+            logger.info("The {} documents present in {} collection", count, x);
             data.put(x, (int) count);
         });
         return data;
-    }
-
-    public MongoTemplate getMongoTemplate(String env) {
-        switch (env) {
-            case "qa03":
-                return mongoTemplateQa03;
-
-            case "005":
-                return mongoTemplateLab005;
-
-            case "000":
-                return mongoTemplateLab000;
-
-            default:
-                throw new IllegalArgumentException("Invalid environment: " + env);
-        }
-
     }
 
 

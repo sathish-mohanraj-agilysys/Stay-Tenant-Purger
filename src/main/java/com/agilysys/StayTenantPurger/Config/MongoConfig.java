@@ -29,16 +29,16 @@ public class MongoConfig {
     private String lab000Database;
 
 
-    @Bean(name = "mongoTemplateqa03")
+    @Bean(name = "qa03")
     public MongoTemplate getMongoTemplateQa03() {
         return new MongoTemplate(MongoClients.create(qa03Uri), qa03Database);
     }
     @Primary
-    @Bean(name = "mongoTemplateLab005")
+    @Bean(name = "005")
     public MongoTemplate getMongoTemplateLab005() {
         return new MongoTemplate(MongoClients.create(lab005Uri), lab005Database);
     }
-    @Bean(name = "mongoTemplateLab000")
+    @Bean(name = "000")
     public MongoTemplate getMongoTemplateLab000() {
         return new MongoTemplate(MongoClients.create(lab000Uri), lab000Database);
     }
