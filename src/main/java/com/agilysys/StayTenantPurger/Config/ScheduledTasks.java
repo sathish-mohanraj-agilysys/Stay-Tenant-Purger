@@ -20,7 +20,7 @@ public class ScheduledTasks {
     public void weeklyTaskinitiated() {
         logger.info("Daily Task initiated");
         Arrays.stream(env).forEach(x -> {
-            stayDeleteService.deleteInMongodb(x);
+            stayDeleteService.deleteInMongodb(x, true);
             logger.info("The {} environment cleaned up",x);
         });
     }

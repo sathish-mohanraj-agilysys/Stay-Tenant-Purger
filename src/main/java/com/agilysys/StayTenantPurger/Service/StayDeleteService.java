@@ -32,6 +32,8 @@ public class StayDeleteService {
     private ObjectMapper objectMapper;
     @Autowired
     private MongoTemplateFactory mongoTemplateFactory;
+    @Autowired
+    private CoreDeleteSerive coreDeleteSerive;
 
 
     private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
@@ -55,7 +57,7 @@ public class StayDeleteService {
         }
     }
 
-    public ResponseEntity deleteInMongodb(String env) {
+    public ResponseEntity deleteInMongodb(String env, boolean isToDeleteCore) {
         Map<String, Integer> deletedOut = new HashMap<>();
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
         File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();

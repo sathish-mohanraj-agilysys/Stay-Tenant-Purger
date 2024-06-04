@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +16,7 @@ public interface StayDeleteInterface {
     String deleteTenant(@RequestBody Tenant tenant, @PathVariable("environment") String env);
 
     @PostMapping("/delete/environment/{environment}/start")
-    ResponseEntity startDeleting(@PathVariable("environment") String env);
+    ResponseEntity startDeleting(@PathVariable("environment") String env, @RequestParam(value = "toDeleteCore",required = false) boolean isToDeleteCore);
 
     @PostMapping("/delete/environment/{environment}/clear")
     String clearDataInLocal(@PathVariable("environment") String env);

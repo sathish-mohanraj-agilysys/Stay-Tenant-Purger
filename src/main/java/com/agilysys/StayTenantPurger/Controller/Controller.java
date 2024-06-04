@@ -36,9 +36,9 @@ public class Controller implements StayDeleteInterface {
         return stayDeleteService.storData(tenant, env);
     }
 
-    public ResponseEntity startDeleting(@PathVariable("environment") String env) {
+    public ResponseEntity startDeleting(@PathVariable("environment") String env,boolean isToDeleteCore) {
         ensureCaching(env);
-        return stayDeleteService.deleteInMongodb(env);
+        return stayDeleteService.deleteInMongodb(env,isToDeleteCore);
     }
 
     public String clearDataInLocal(@PathVariable("environment") String env) {
