@@ -9,12 +9,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
 public class MongoConfig {
-    //    @Value("${spring.data.mongodb.uriqa}")
-//    private String qaUri;
-//    @Value("${spring.data.mongodb.uriqa01}")
-//    private String qa01Uri;
-//    @Value("${spring.data.mongodb.uriqa_int}")
-//    private String qa_intUri;
+    @Value("${spring.data.mongodb.uriqa03}")
+    private String qaUri;
+    @Value("${spring.data.mongodb.databaseqa03}")
+    private String qaDatabase;
     @Value("${spring.data.mongodb.uriqa03}")
     private String qa03Uri;
     @Value("${spring.data.mongodb.databaseqa03}")
@@ -32,6 +30,10 @@ public class MongoConfig {
     @Bean(name = "qa03")
     public MongoTemplate getMongoTemplateQa03() {
         return new MongoTemplate(MongoClients.create(qa03Uri), qa03Database);
+    }
+    @Bean(name = "qa")
+    public MongoTemplate getMongoTemplateQa() {
+        return new MongoTemplate(MongoClients.create(qaUri), qaDatabase);
     }
     @Primary
     @Bean(name = "005")
