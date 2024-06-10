@@ -22,14 +22,14 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"tenant\":[\"294052\"],\r\n    \"property\":[\"QAINT1297349\",\"QAINT1297350\",\"QAINT1297353\",\"QAINT1297352\",\"QAINT1297351\",\"QAINT1297354\"]\r\n}",
+					"raw": "{\"tenant\":[\"294052\"],\"property\":[\"QAint12e3\"]}",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8080/delete/environment/qa03"
+				"url": "http://localhost:8080/delete/environment/005"
 			},
 			"response": []
 		},
@@ -38,7 +38,7 @@
 			"request": {
 				"method": "POST",
 				"header": [],
-				"url": "http://localhost:8080/delete/environment/qa03/start"
+				"url": "http://localhost:8080/delete/environment/005/start"
 			},
 			"response": []
 		},
@@ -56,15 +56,28 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://localhost:8080/environment/qa03/getDocumentCount"
+				"url": "http://localhost:8080/environment/005/getDocumentCount"
 			},
 			"response": []
 		},
 		{
 			"name": "Get Data from the local cache",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/delete/environment/005"
 			},
 			"response": []
 		},
@@ -72,7 +85,8 @@
 			"name": "Get document count from cache details",
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": "http://localhost:8080/delete/environment/005/documentCount"
 			},
 			"response": []
 		},
