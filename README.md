@@ -23,3 +23,5 @@ Aks-stay-qa -qa03   -->qa03
 lab-stay-aks-005    -->005
 
 lab-stay-aks-000    -->000
+## How to Access
+Schema for the end point is mentioned in the path ./Stay-Tenant-purger.postman_collection.json
