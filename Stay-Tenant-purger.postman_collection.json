@@ -1,0 +1,108 @@
+{
+	"info": {
+		"_postman_id": "ac4a4f7f-6de1-4eb2-a68a-56ac72be4fe5",
+		"name": "Stay-Tenant-purger",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "35103187"
+	},
+	"item": [
+		{
+			"name": "drop collection",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "http://localhost:8080/delete/environment/000/dropCollection"
+			},
+			"response": []
+		},
+		{
+			"name": "add tenant or property",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tenant\":[\"294052\"],\r\n    \"property\":[\"QAINT1297349\",\"QAINT1297350\",\"QAINT1297353\",\"QAINT1297352\",\"QAINT1297351\",\"QAINT1297354\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/delete/environment/qa03"
+			},
+			"response": []
+		},
+		{
+			"name": "start deleting the tenant and property",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "http://localhost:8080/delete/environment/qa03/start"
+			},
+			"response": []
+		},
+		{
+			"name": "get all collections",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/environment/qa03/getAllCollections"
+			},
+			"response": []
+		},
+		{
+			"name": "get total doucument count",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/environment/qa03/getDocumentCount"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data from the local cache",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get document count from cache details",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "start deleting with core",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/delete/environment/005/start?toDeleteCore=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"delete",
+						"environment",
+						"005",
+						"start"
+					],
+					"query": [
+						{
+							"key": "toDeleteCore",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
