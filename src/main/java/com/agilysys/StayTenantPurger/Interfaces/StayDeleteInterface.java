@@ -13,7 +13,7 @@ import java.util.Set;
 
 public interface StayDeleteInterface {
     @PostMapping("/delete/environment/{environment}")
-    String deleteTenant(@RequestBody Tenant tenant, @PathVariable("environment") String env);
+    String addTenantInCache(@RequestBody Tenant tenant, @PathVariable("environment") String env);
 
     @PostMapping("/delete/environment/{environment}/start")
     ResponseEntity startDeleting(@PathVariable("environment") String env, @RequestParam(value = "toDeleteCore",required = false) boolean isToDeleteCore);

@@ -31,7 +31,7 @@ public class Controller implements StayDeleteInterface {
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
 
-    public String deleteTenant(@RequestBody Tenant tenant, @PathVariable("environment") String env) {
+    public String addTenantInCache(@RequestBody Tenant tenant, @PathVariable("environment") String env) {
         ensureCaching(env);
         return stayDeleteService.storData(tenant, env);
     }
