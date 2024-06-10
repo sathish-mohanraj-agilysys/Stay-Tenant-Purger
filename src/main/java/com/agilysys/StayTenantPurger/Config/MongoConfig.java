@@ -9,9 +9,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
 public class MongoConfig {
-    @Value("${spring.data.mongodb.uriqa03}")
+    @Value("${spring.data.mongodb.uriqa}")
     private String qaUri;
-    @Value("${spring.data.mongodb.databaseqa03}")
+    @Value("${spring.data.mongodb.databaseqa}")
     private String qaDatabase;
     @Value("${spring.data.mongodb.uriqa03}")
     private String qa03Uri;
