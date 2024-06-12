@@ -220,6 +220,7 @@ public class StayDeleteService {
 
                 Query query = new Query(criteria);
                 long count = mongoTemplate.count(query, collectionName);
+                logger.info(String.format("%s documents present in the %s collection from the cache, in the %s environment", count,collectionName,env));
                 documentCount.put(collectionName, (int) count);
                    });
             return documentCount.toString();
