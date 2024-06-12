@@ -1,0 +1,42 @@
+accountingDate:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+pmsProperties:
+ tenantId:
+  - tenantId
+ propertyId:
+  - _id
+accountingItems:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
+rateCalendar:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+rateFactor:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ratePlan:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ratesConfig:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+rateStrategy:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
