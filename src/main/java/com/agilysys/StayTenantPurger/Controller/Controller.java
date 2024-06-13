@@ -72,6 +72,11 @@ public class Controller implements StayDeleteInterface {
         return stayDeleteService.getDocumentCount(env);
     }
 
+
+    public String backupCollection(String env) {
+        return stayDeleteService.getDocumentCountFromCacheDetailsAndBackup(env);
+    }
+
     private void ensureCaching(String env) {
         try {
             File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();

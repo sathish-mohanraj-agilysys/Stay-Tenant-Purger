@@ -31,4 +31,6 @@ public interface StayDeleteInterface {
     Set<String> getAllCollections(@PathVariable("environment") String env);
     @GetMapping("/environment/{environment}/getDocumentCount")
     Map<String, Integer> getDocumentCount(@PathVariable("environment") String env);
+    @PostMapping("/backup/environment/{environment}")
+    String backupCollection(@PathVariable("environment") String env);
 }
