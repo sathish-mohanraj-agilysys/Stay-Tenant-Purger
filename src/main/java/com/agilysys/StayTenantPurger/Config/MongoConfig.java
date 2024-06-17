@@ -13,6 +13,10 @@ public class MongoConfig {
     private String qaUri;
     @Value("${spring.data.mongodb.databaseqa}")
     private String qaDatabase;
+    @Value("${spring.data.mongodb.uriqaint}")
+    private String qaintUri;
+    @Value("${spring.data.mongodb.databaseqaint}")
+    private String qaintDatabase;
     @Value("${spring.data.mongodb.urirelease}")
     private String releaseUri;
     @Value("${spring.data.mongodb.databaserelease}")
@@ -53,6 +57,10 @@ public class MongoConfig {
     @Bean(name = "qa")
     public MongoTemplate getMongoTemplateQa() {
         return new MongoTemplate(MongoClients.create(qaUri), qaDatabase);
+    }
+    @Bean(name = "qaint")
+    public MongoTemplate getMongoTemplateQaInt() {
+        return new MongoTemplate(MongoClients.create(qaintUri), qaintDatabase);
     }
     @Primary
     @Bean(name = "005")
