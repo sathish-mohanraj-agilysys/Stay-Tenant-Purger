@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "ac4a4f7f-6de1-4eb2-a68a-56ac72be4fe5",
 		"name": "Stay-Tenant-purger",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "35103187"
 	},
 	"item": [
@@ -11,43 +11,131 @@
 			"request": {
 				"method": "POST",
 				"header": [],
-				"url": "http://localhost:8080/delete/environment/000/dropCollection"
+				"url": {
+					"raw": "http://localhost:8080/dropCollections/environment/000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"dropCollections",
+						"environment",
+						"000"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "add tenant or property",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"tenant\":[\"294052\"],\"property\":[\"QAint12e3\"]}",
+					"raw": "{\"tenant\":[\"208206\"],\"property\":[\"heler\"]}",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8080/delete/environment/005"
+				"url": {
+					"raw": "http://localhost:8080/addCache/environment/000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addCache",
+						"environment",
+						"000"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "start deleting the tenant and property",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agilysys",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "agilysys",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
-				"url": "http://localhost:8080/delete/environment/005/start"
+				"url": {
+					"raw": "http://localhost:8080/delete/environment/000/start",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"delete",
+						"environment",
+						"000",
+						"start"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "get all collections",
 			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "7666bc90-673d-40a6-83ee-1e04603c8d74",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
-				"header": [],
-				"url": "http://localhost:8080/environment/qa03/getAllCollections"
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dXNlcjowZDhhOTAxNS1iM2VmLTQyZTItYmRiMy1lNmQ2NGY3ZTFlM2Q=",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/allCollections/environment/000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"allCollections",
+						"environment",
+						"000"
+					]
+				}
 			},
 			"response": []
 		},
@@ -56,7 +144,19 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://localhost:8080/environment/005/getDocumentCount"
+				"url": {
+					"raw": "http://localhost:8080/allDocumentCounts/environment/000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"allDocumentCounts",
+						"environment",
+						"000"
+					]
+				}
 			},
 			"response": []
 		},
@@ -77,7 +177,19 @@
 						}
 					}
 				},
-				"url": "http://localhost:8080/delete/environment/005"
+				"url": {
+					"raw": "http://localhost:8080/getCache/environment/000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"getCache",
+						"environment",
+						"000"
+					]
+				}
 			},
 			"response": []
 		},
@@ -86,7 +198,19 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://localhost:8080/delete/environment/005/documentCount"
+				"url": {
+					"raw": "http://localhost:8080/documentCount/environment/000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"documentCount",
+						"environment",
+						"000"
+					]
+				}
 			},
 			"response": []
 		},
@@ -94,9 +218,15 @@
 			"name": "start deleting with core",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWdpbHlzeXM6YWdpbHlzeXM=",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "http://localhost:8080/delete/environment/005/start?toDeleteCore=true",
+					"raw": "http://localhost:8080/delete/environment/000/start?toDeleteCore=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -105,7 +235,7 @@
 					"path": [
 						"delete",
 						"environment",
-						"005",
+						"000",
 						"start"
 					],
 					"query": [
@@ -113,6 +243,49 @@
 							"key": "toDeleteCore",
 							"value": "true"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Backup the collection from the cache",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/backup/environment/000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"backup",
+						"environment",
+						"000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "clear the cache in the  local",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/clearCache/environment/000/clear",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"clearCache",
+						"environment",
+						"000",
+						"clear"
 					]
 				}
 			},
