@@ -14,12 +14,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 
 @RestController
 public class Controller implements StayDeleteInterface {
+    public Path RESOURCE_PATH = Paths.get(System.getProperty("user.dir"), "src", "main", "resources");
+    public Path BACKUP_PATH = RESOURCE_PATH.resolve("Backup");
 
     @Autowired
     private CoreDeleteSerive coreDeleteSerive;
@@ -27,6 +32,11 @@ public class Controller implements StayDeleteInterface {
     private StayDeleteService stayDeleteService;
     @Autowired
     private ObjectMapper objectMapper;
+
+    public Controller() {
+        createDirectoryIfNotExists(RESOURCE_PATH);
+        createDirectoryIfNotExists(BACKUP_PATH);
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
@@ -36,9 +46,9 @@ public class Controller implements StayDeleteInterface {
         return stayDeleteService.storData(tenant, env);
     }
 
-    public ResponseEntity startDeleting(@PathVariable("environment") String env,boolean isToDeleteCore) {
+    public ResponseEntity startDeleting(@PathVariable("environment") String env, boolean isToDeleteCore) {
         ensureCaching(env);
-        return stayDeleteService.deleteInMongodb(env,isToDeleteCore);
+        return stayDeleteService.deleteInMongodb(env, isToDeleteCore);
     }
 
     public String clearDataInLocal(@PathVariable("environment") String env) {
@@ -79,20 +89,33 @@ public class Controller implements StayDeleteInterface {
 
     private void ensureCaching(String env) {
         try {
-            File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
-            File backUpFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "Backup", env + ".json").toFile();
+            File resourceFile = RESOURCE_PATH.resolve(env + ".json").toFile();
+            File backUpFile = BACKUP_PATH.resolve( env + ".json").toFile();
             if (!resourceFile.exists()) {
                 resourceFile.createNewFile();
                 objectMapper.writeValue(resourceFile, new Tenant());
             }
             if (!backUpFile.exists()) {
-                if(!backUpFile.createNewFile())throw new RuntimeException("Cannot proceed further");
+                if (!backUpFile.createNewFile()) throw new RuntimeException("Cannot proceed further");
                 objectMapper.writeValue(backUpFile, new Tenant());
             }
 
 
         } catch (Exception e) {
             logger.info("Cannot ensure caching");
+        }
+    }
+
+    public void createDirectoryIfNotExists(Path path) {
+        try {
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+                System.out.println("Directory created: " + path);
+            } else {
+                System.out.println("Directory already exists: " + path);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
