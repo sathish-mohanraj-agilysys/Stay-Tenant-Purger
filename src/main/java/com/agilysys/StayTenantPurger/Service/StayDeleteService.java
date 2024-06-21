@@ -1,5 +1,6 @@
 package com.agilysys.StayTenantPurger.Service;
 
+import com.agilysys.StayTenantPurger.Config.DataLoader;
 import com.agilysys.StayTenantPurger.DAO.Tenant;
 import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,13 +47,15 @@ public class StayDeleteService {
     private MongoTemplateFactory mongoTemplateFactory;
     @Autowired
     private CoreDeleteSerive coreDeleteSerive;
+    @Autowired
+    private DataLoader dataLoader;
 
 
     private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
 
 
     public String storData(Tenant tenant, String env) {
-        File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
+        File resourceFile = dataLoader.loadCacheFile(env);
 
         try {
 
@@ -60,9 +63,6 @@ public class StayDeleteService {
             temp.getTenant().addAll(tenant.getTenant());
             temp.getProperty().addAll(tenant.getProperty());
             objectMapper.writeValue(resourceFile, temp);
-            logger.info("Tenant: {}", temp.toString());
-            logger.info("The environment is: {}", env);
-            logger.info(temp.toString());
             return temp.toString();
         } catch (IOException e) {
             return "File not found";
@@ -72,11 +72,11 @@ public class StayDeleteService {
     public ResponseEntity deleteInMongodb(String env, boolean isToDeleteCore) {
         Map<String, Integer> deletedOut = new HashMap<>();
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
-        File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();
+        File ymlFile = dataLoader.loadYMlFile();
         Yaml yaml = new Yaml();
         Tenant tenantTemp = null;
         try {
-            File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
+            File resourceFile =dataLoader.loadCacheFile(env);
             tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
         } catch (Exception e) {
             System.out.println("cannot initiate the delete operation");
@@ -138,7 +138,7 @@ public class StayDeleteService {
             return new ResponseEntity<>("Cannot not open the file", HttpStatus.FORBIDDEN);
         }
         try {
-            File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
+            File resourceFile =dataLoader.loadCacheFile(env);
             File backUpFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "Backup", env + ".json").toFile();
             Tenant resourceTenant = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
             Tenant backupTenant = objectMapper.readValue(new FileInputStream(backUpFile), Tenant.class);
@@ -159,7 +159,7 @@ public class StayDeleteService {
 
 
     public String clearInLocal(String env) {
-        File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
+        File resourceFile = dataLoader.loadCacheFile(env);
         try {
             Tenant temp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
             temp.getProperty().clear();
@@ -178,11 +178,11 @@ public class StayDeleteService {
     public String getDocumentCountFromCacheDetails(String env) {
         Map<String, Integer> documentCount = new HashMap<>();
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
-        File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();
+        File ymlFile = dataLoader.loadYMlFile();
         Yaml yaml = new Yaml();
         Tenant tenantTemp = null;
         try {
-            File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
+            File resourceFile = dataLoader.loadCacheFile(env);
             tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
         } catch (Exception e) {
             logger.error("Cannot get the details");
@@ -251,11 +251,11 @@ public class StayDeleteService {
         }
         Map<String, Integer> documentCount = new HashMap<>();
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
-        File ymlFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "rGuestStaymap.yml").toFile();
+        File ymlFile =dataLoader.loadCacheFile(env);
         Yaml yaml = new Yaml();
         Tenant tenantTemp = null;
         try {
-            File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
+            File resourceFile =dataLoader.loadCacheFile(env);
             tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
         } catch (Exception e) {
             logger.error("Cannot get the details");
