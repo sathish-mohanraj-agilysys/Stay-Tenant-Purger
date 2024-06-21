@@ -218,13 +218,6 @@
 			"name": "start deleting with core",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Basic YWdpbHlzeXM6YWdpbHlzeXM=",
-						"type": "text"
-					}
-				],
 				"url": {
 					"raw": "http://localhost:8080/delete/environment/000/start?toDeleteCore=true",
 					"protocol": "http",
