@@ -30,7 +30,7 @@ public interface StayDeleteInterface {
     @PostMapping("/dropCollections/environment/{environment}")
     String dropCollections(@PathVariable("environment") String env);
 
-    @GetMapping("/allCollections/{environment}")
+    @GetMapping("/allCollections/environment/{environment}")
     Set<String> getAllCollections(@PathVariable("environment") String env);
 
     @GetMapping("/allDocumentCounts/{environment}")
