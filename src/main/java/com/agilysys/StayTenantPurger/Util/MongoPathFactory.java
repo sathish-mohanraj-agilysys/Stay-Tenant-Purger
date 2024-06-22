@@ -11,10 +11,12 @@ import java.util.Map;
 
 @Component
 public class MongoPathFactory extends ArrayList<CollectionPath> {
+    @Autowired
+    public QuerryBuilder querryBuilder;
 
     public MongoPathFactory(DataLoader dataLoader) throws FileNotFoundException {
-        Map<String, Map<String, ArrayList<String>>> dbSchema= dataLoader.readYMlFile();
-        dbSchema.entrySet().parallelStream().forEach(entry->{
+        Map<String, Map<String, ArrayList<String>>> dbSchema = dataLoader.readYMlFile();
+        dbSchema.entrySet().parallelStream().forEach(entry -> {
             String tenantPath = "";
             String propertyPath = "";
             if (entry.getValue().get("tenantId") != null) {
@@ -23,7 +25,7 @@ public class MongoPathFactory extends ArrayList<CollectionPath> {
             if (entry.getValue().get("propertyId") != null) {
                 propertyPath = entry.getValue().get("propertyId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
             }
-            CollectionPath collectionPath=new CollectionPath(entry.getKey(), tenantPath,propertyPath);
+            CollectionPath collectionPath = new CollectionPath(entry.getKey(), tenantPath, propertyPath);
             this.add(collectionPath);
         });
 

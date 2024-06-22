@@ -51,6 +51,7 @@ public class StayDeleteService {
     private DataLoader dataLoader;
     @Autowired
     private MongoPathFactory mongoPathFactory;
+
     public String storData(Tenant tenant, String env) {
         try {
             Tenant temp = dataLoader.readDataFromCacheFile(env);
@@ -157,61 +158,25 @@ public class StayDeleteService {
     public String getDocumentCountFromCacheDetails(String env) {
         Map<String, Integer> documentCount = new HashMap<>();
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
-        File ymlFile = dataLoader.loadYMlFile();
-        Yaml yaml = new Yaml();
+       Set<String>collections= getAllCollections(env);
         Tenant tenantTemp = null;
         try {
-            File resourceFile = dataLoader.loadCacheFile(env);
-            tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
+            tenantTemp = dataLoader.readDataFromCacheFile(env);
         } catch (Exception e) {
             logger.error("Cannot get the details");
         }
-        Map<String, Map<String, ArrayList<String>>> yamlMap;
-        try {
-            yamlMap = yaml.load(new FileInputStream(ymlFile));
-            if (yamlMap.size() != getAllCollections(env).size()) {
-                logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", yamlMap.size(), getAllCollections(env).size());
-            }
-            Tenant finalTenantTemp = tenantTemp;
-            mongoPathFactory.stream().parallel().forEach(mongoCollection -> {
-
-                Criteria criteria = null;
-                if (mongoCollection.getName().equalsIgnoreCase("config") || mongoCollection.getName().equalsIgnoreCase("configEvents")) {
-                    assert finalTenantTemp != null;
-                    Set<String> tenantAndProperty = finalTenantTemp.getProperty();
-                    tenantAndProperty.addAll(finalTenantTemp.getTenant());
-                    if (tenantAndProperty.size() == 0) {
-                        logger.info("No doucuments found for the " + mongoCollection.getName());
-                        return;
-                    }
-                    String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
-                    criteria = Criteria.where("path").regex(regex);
-
-                } else if (!mongoCollection.getTenantPath().equalsIgnoreCase("") && !mongoCollection.getPropertyPath().equalsIgnoreCase("")) {
-                    criteria = new Criteria().orOperator(
-                            Criteria.where(mongoCollection.getTenantPath()).in(finalTenantTemp.getTenant()),
-                            Criteria.where(mongoCollection.getPropertyPath()).in(finalTenantTemp.getProperty())
-                    );
-                } else if (mongoCollection.getTenantPath().equalsIgnoreCase("") && !mongoCollection.getPropertyPath().equalsIgnoreCase("")) {
-                    criteria = new Criteria().orOperator(
-
-                            Criteria.where(mongoCollection.getPropertyPath()).in(finalTenantTemp.getProperty())
-                    );
-                } else {
-                    criteria = new Criteria().orOperator(
-                            Criteria.where(mongoCollection.getTenantPath()).in(finalTenantTemp.getTenant()));
-                }
-
-                Query query = new Query(criteria);
-                long count = mongoTemplate.count(query, mongoCollection.getName());
-                logger.info(String.format("%s documents present in the %s collection from the cache, in the %s environment", count, mongoCollection.getName(), env));
-                documentCount.put(mongoCollection.getName(), (int) count);
-            });
-            return documentCount.toString();
-
-        } catch (FileNotFoundException e) {
-            return "Cannot make operation";
+        if (mongoPathFactory.size() !=collections.size()) {
+            logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(),collections.size());
         }
+        Tenant finalTenantTemp = tenantTemp;
+        mongoPathFactory.parallelStream().forEach(mongoCollection -> {
+            Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
+            long count = mongoTemplate.count(query, mongoCollection.getName());
+            logger.info(String.format("%s documents present in the %s collection from the cache, in the %s environment", count, mongoCollection.getName(), env));
+            documentCount.put(mongoCollection.getName(), (int) count);
+        });
+        return documentCount.toString();
+
     }
 
     public String getDocumentCountFromCacheDetailsAndBackup(String env) {
