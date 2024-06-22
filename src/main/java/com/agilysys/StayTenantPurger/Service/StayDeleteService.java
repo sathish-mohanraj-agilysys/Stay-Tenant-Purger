@@ -3,6 +3,7 @@ package com.agilysys.StayTenantPurger.Service;
 import com.agilysys.StayTenantPurger.Config.DataLoader;
 import com.agilysys.StayTenantPurger.DAO.Tenant;
 import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
+import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 import com.mongodb.client.result.DeleteResult;
@@ -48,7 +49,8 @@ public class StayDeleteService {
     private CoreDeleteSerive coreDeleteSerive;
     @Autowired
     private DataLoader dataLoader;
-
+    @Autowired
+    private MongoPathFactory mongoPathFactory;
     public String storData(Tenant tenant, String env) {
         try {
             Tenant temp = dataLoader.readDataFromCacheFile(env);
@@ -171,47 +173,39 @@ public class StayDeleteService {
                 logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", yamlMap.size(), getAllCollections(env).size());
             }
             Tenant finalTenantTemp = tenantTemp;
-            yamlMap.entrySet().stream().parallel().forEach(entry -> {
-                String collectionName = entry.getKey();
-                String tenantPath = "";
-                String propertyPath = "";
-                if (entry.getValue().get("tenantId") != null) {
-                    tenantPath = entry.getValue().get("tenantId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
-                }
-                if (entry.getValue().get("propertyId") != null) {
-                    propertyPath = entry.getValue().get("propertyId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
-                }
+            mongoPathFactory.stream().parallel().forEach(mongoCollection -> {
+
                 Criteria criteria = null;
-                if (entry.getKey().equalsIgnoreCase("config") || entry.getKey().equalsIgnoreCase("configEvents")) {
+                if (mongoCollection.getName().equalsIgnoreCase("config") || mongoCollection.getName().equalsIgnoreCase("configEvents")) {
                     assert finalTenantTemp != null;
                     Set<String> tenantAndProperty = finalTenantTemp.getProperty();
                     tenantAndProperty.addAll(finalTenantTemp.getTenant());
                     if (tenantAndProperty.size() == 0) {
-                        logger.info("No doucuments found for the " + collectionName);
+                        logger.info("No doucuments found for the " + mongoCollection.getName());
                         return;
                     }
                     String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
                     criteria = Criteria.where("path").regex(regex);
 
-                } else if (!tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
+                } else if (!mongoCollection.getTenantPath().equalsIgnoreCase("") && !mongoCollection.getPropertyPath().equalsIgnoreCase("")) {
                     criteria = new Criteria().orOperator(
-                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()),
-                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
+                            Criteria.where(mongoCollection.getTenantPath()).in(finalTenantTemp.getTenant()),
+                            Criteria.where(mongoCollection.getPropertyPath()).in(finalTenantTemp.getProperty())
                     );
-                } else if (tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
+                } else if (mongoCollection.getTenantPath().equalsIgnoreCase("") && !mongoCollection.getPropertyPath().equalsIgnoreCase("")) {
                     criteria = new Criteria().orOperator(
 
-                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
+                            Criteria.where(mongoCollection.getPropertyPath()).in(finalTenantTemp.getProperty())
                     );
                 } else {
                     criteria = new Criteria().orOperator(
-                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()));
+                            Criteria.where(mongoCollection.getTenantPath()).in(finalTenantTemp.getTenant()));
                 }
 
                 Query query = new Query(criteria);
-                long count = mongoTemplate.count(query, collectionName);
-                logger.info(String.format("%s documents present in the %s collection from the cache, in the %s environment", count, collectionName, env));
-                documentCount.put(collectionName, (int) count);
+                long count = mongoTemplate.count(query, mongoCollection.getName());
+                logger.info(String.format("%s documents present in the %s collection from the cache, in the %s environment", count, mongoCollection.getName(), env));
+                documentCount.put(mongoCollection.getName(), (int) count);
             });
             return documentCount.toString();
 
