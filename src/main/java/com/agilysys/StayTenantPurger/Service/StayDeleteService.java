@@ -66,63 +66,25 @@ public class StayDeleteService {
     }
 
     public ResponseEntity deleteInMongodb(String env, boolean isToDeleteCore) {
-        Map<String, Integer> deletedOut = new HashMap<>();
+        Set<String> collections=getAllCollections(env);
+        Map<String, Integer> deletedOut ;
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
         Tenant tenantToDelete = null;
-        Map<String, Map<String, ArrayList<String>>> yamlMap;
 
         try {
             tenantToDelete =dataLoader.readDataFromCacheFile(env);
-            yamlMap = dataLoader.readYMlFile();
-            if (yamlMap.size() != getAllCollections(env).size()) {
-                logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", yamlMap.size(), getAllCollections(env).size());
+            if (mongoPathFactory.size() != getAllCollections(env).size()) {
+                logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(), collections.size());
             }
             Tenant finalTenantTemp = tenantToDelete;
-            yamlMap.entrySet().stream().parallel().forEach(entry -> {
-                String collectionName = entry.getKey();
-                String tenantPath = "";
-                String propertyPath = "";
-                if (entry.getValue().get("tenantId") != null) {
-                    tenantPath = entry.getValue().get("tenantId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
-                }
-                if (entry.getValue().get("propertyId") != null) {
-                    propertyPath = entry.getValue().get("propertyId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
-                }
-                Criteria criteria = null;
-                if (entry.getKey().equalsIgnoreCase("config") || entry.getKey().equalsIgnoreCase("configEvents")) {
-                    assert finalTenantTemp != null;
-                    Set<String> tenantAndProperty = finalTenantTemp.getProperty();
-                    tenantAndProperty.addAll(finalTenantTemp.getTenant());
-                    if (tenantAndProperty.size() == 0) {
-                        logger.info("No doucuments found for the " + collectionName);
-                        return;
-                    }
-                    String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
-                    criteria = Criteria.where("path").regex(regex);
-
-                } else if (!tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
-                    criteria = new Criteria().orOperator(
-                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()),
-                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
-                    );
-                } else if (tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
-                    criteria = new Criteria().orOperator(
-
-                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
-                    );
-                } else {
-                    criteria = new Criteria().orOperator(
-                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()));
-                }
-
-                Query query = new Query(criteria);
-                DeleteResult deleteResult = mongoTemplate.remove(query, Object.class, collectionName);
-                deletedOut.put(collectionName, (int) deleteResult.getDeletedCount());
-                if (deleteResult.getDeletedCount() == 0) logger.info("No doucuments found for the " + collectionName);
+            deletedOut= mongoPathFactory.parallelStream().collect(Collectors.toMap(CollectionPath::getName, mongoCollection->{
+                Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
+                DeleteResult deleteResult = mongoTemplate.remove(query, Object.class, mongoCollection.getName());
+                if (deleteResult.getDeletedCount() == 0) logger.info("No doucuments found for the " + mongoCollection.getName());
                 else
-                    logger.info(String.format("The %s documents deleted in the %s collection", deleteResult.getDeletedCount(), collectionName));
-
-            });
+                    logger.info(String.format("The %s documents deleted in the %s collection", deleteResult.getDeletedCount(), mongoCollection.getName()));
+                return (int) deleteResult.getDeletedCount();
+            }));
 
         } catch (FileNotFoundException e) {
             return new ResponseEntity<>("Cannot not open the file", HttpStatus.FORBIDDEN);
@@ -141,7 +103,7 @@ public class StayDeleteService {
             logger.error("Error in backup for {} environment",env);
         }
 
-        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb /n" + deletedOut.toString(), yamlMap.size(), getAllCollections(env).size(), env), HttpStatus.OK);
+        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb /n" + deletedOut.toString(), mongoPathFactory.size(), collections.size(), env), HttpStatus.OK);
     }
 
 
