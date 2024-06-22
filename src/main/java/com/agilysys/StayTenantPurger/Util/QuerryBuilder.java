@@ -24,10 +24,11 @@ public class QuerryBuilder {
             tenantAndProperty.addAll(tenant.getTenant());
             if (tenantAndProperty.isEmpty()) {
                 logger.info("No doucuments found for the " + mongoCollection.getName());
-                return new Query();
+               criteria= Criteria.where("path").is("");
+            }else {
+                String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
+                criteria = Criteria.where("path").regex(regex);
             }
-            String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
-            criteria = Criteria.where("path").regex(regex);
 
         } else if (!mongoCollection.getTenantPath().equalsIgnoreCase("") && !mongoCollection.getPropertyPath().equalsIgnoreCase("")) {
             criteria = new Criteria().orOperator(
