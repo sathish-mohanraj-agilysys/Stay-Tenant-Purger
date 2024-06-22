@@ -7,6 +7,7 @@ import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.result.DeleteResult;
 import org.bson.BsonBinaryWriter;
 import org.bson.BsonWriter;
@@ -41,7 +42,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class StayDeleteService {
-    private final int BATCH_SIZE=1000;
+    private final int BATCH_SIZE=10000;
+    private Path CLONING_PATH=Paths.get(System.getProperty("user.dir"), "Cloned");
     private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
     @Autowired
     private ObjectMapper objectMapper;
@@ -156,7 +158,7 @@ public class StayDeleteService {
 
     public String getDocumentCountFromCacheDetailsAndBackup(String env) {
         try {
-            Files.createDirectories(Paths.get(System.getProperty("user.dir"), "Cloned"));
+            Files.createDirectories(CLONING_PATH);
         } catch (IOException e) {
             logger.error(e.toString());
         }
@@ -175,9 +177,23 @@ public class StayDeleteService {
         Tenant finalTenantTemp = tenantTemp;
         mongoPathFactory.parallelStream().forEach( mongoCollection->{
             Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
-            List<DBObject> documents = mongoTemplate.find(query, DBObject.class, mongoCollection.getName());
+            Path outputPath = CLONING_PATH.resolve( mongoCollection.getName()+ ".bson");
 
-            writeInBson(Paths.get(System.getProperty("user.dir"), "Cloned", mongoCollection.getName() + ".bson"), documents);
+            try (MongoCursor<Document> cursor = mongoTemplate.getCollection(mongoCollection.getName()).find(query.getQueryObject()).cursor()) {
+                List<Document> batch = new ArrayList<>();
+                while (cursor.hasNext()) {
+                    batch.add( cursor.next());
+                    if (batch.size() >= BATCH_SIZE) {// Process in batches of 1000 documents
+                        System.out.println("going to write "+ mongoCollection.getName());
+                        writeInBson(outputPath, batch);
+                        System.out.println("write completed "+mongoCollection.getName());
+                        batch.clear();
+                    }
+                }
+                if (!batch.isEmpty()) { // Write any remaining documents
+                    writeInBson(outputPath, batch);
+                }
+            }
             logger.info(String.format(mongoCollection.getName() + " completed"));
         });
         return documentCount.toString();
@@ -223,7 +239,7 @@ public class StayDeleteService {
                 ));
     }
 
-    public synchronized void writeInBson(Path filePath, List<DBObject> documents) {
+    public synchronized void writeInBson(Path filePath, List<Document> documents) {
         File backupFile = filePath.toFile();
         if (!backupFile.exists()) {
             try {
@@ -233,15 +249,13 @@ public class StayDeleteService {
             }
         }
         try (FileOutputStream fos = new FileOutputStream(backupFile)) {
-            for (DBObject document : documents) {
+            for (Document document : documents) {
                 BasicOutputBuffer buffer = new BasicOutputBuffer();
                 BsonWriter writer = new BsonBinaryWriter(buffer);
 
-                // Convert DBObject to Document
-                Document doc = new Document(document.toMap());
 
                 // Use DocumentCodec to encode Document to BsonWriter
-                new DocumentCodec().encode(writer, doc, org.bson.codecs.EncoderContext.builder().isEncodingCollectibleDocument(true).build());
+                new DocumentCodec().encode(writer, document, org.bson.codecs.EncoderContext.builder().isEncodingCollectibleDocument(true).build());
 
                 writer.flush();
                 fos.write(buffer.toByteArray());
