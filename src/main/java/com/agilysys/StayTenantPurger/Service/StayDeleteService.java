@@ -332,13 +332,15 @@ public class StayDeleteService {
 
     public Map<String, Integer> getDocumentCount(String env) {
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
-        Map<String, Integer> data = new HashMap<>();
-        mongoTemplate.getCollectionNames().stream().parallel().forEach(x -> {
-            long count = mongoTemplate.getCollection(x).countDocuments();
-            logger.info("The {} documents present in {} collection", count, x);
-            data.put(x, (int) count);
-        });
-        return data;
+       return mongoTemplate.getCollectionNames().parallelStream()
+                .collect(Collectors.toMap(
+                        collectionName -> collectionName,
+                        collectionName -> {
+                            long count = mongoTemplate.getCollection(collectionName).countDocuments();
+                            logger.info("{} documents are in {} collection in {}", count, collectionName,env);
+                            return (int) count;
+                        }
+                ));
     }
 
     public synchronized void writeInBson(Path filePath, List<DBObject> documents) {
