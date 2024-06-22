@@ -314,14 +314,12 @@ public class StayDeleteService {
     }
 
     public String getDataFromCache(String env) {
-        File resourceFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", env + ".json").toFile();
-
-        try {
-            Tenant temp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
+          try {
+            Tenant temp = dataLoader.readDataFromCacheFile(env);
             logger.info(String.format("Data returned from the cache for the %s environment is %s ", env, temp.toString()));
             return temp.toString();
         } catch (IOException e) {
-            return "No data has been found in the local cache";
+            return String.format("Error in Getting the cache file for %s environment ",env)+e;
         }
 
     }
