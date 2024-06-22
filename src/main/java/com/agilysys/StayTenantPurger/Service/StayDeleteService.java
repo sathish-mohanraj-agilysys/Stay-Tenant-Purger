@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class StayDeleteService {
+    private final int BATCH_SIZE=1000;
     private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
     @Autowired
     private ObjectMapper objectMapper;
@@ -78,12 +79,25 @@ public class StayDeleteService {
             }
             Tenant finalTenantTemp = tenantToDelete;
             deletedOut= mongoPathFactory.parallelStream().collect(Collectors.toMap(CollectionPath::getName, mongoCollection->{
+                boolean isPresent = true;
+                int deletedCount = 0;
                 Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
-                DeleteResult deleteResult = mongoTemplate.remove(query, Object.class, mongoCollection.getName());
-                if (deleteResult.getDeletedCount() == 0) logger.info("No doucuments found for the " + mongoCollection.getName());
+                query.limit(BATCH_SIZE);
+                while (isPresent) {
+                    List<Document> documents = mongoTemplate.find(query, Document.class, mongoCollection.getName());
+                    if (!documents.isEmpty()) {
+                        Criteria batchCriteria = Criteria.where("_id").in(documents.stream().map(x -> x.get("_id")).collect(Collectors.toSet()));
+                        DeleteResult deleteResult = mongoTemplate.remove(new Query(batchCriteria), Object.class, mongoCollection.getName());
+                        deletedCount += deleteResult.getDeletedCount();
+                    } else {
+                        isPresent = false;
+                    }
+                }
+
+                if (deletedCount== 0) logger.info("No doucuments found for the " + mongoCollection.getName());
                 else
-                    logger.info(String.format("The %s documents deleted in the %s collection", deleteResult.getDeletedCount(), mongoCollection.getName()));
-                return (int) deleteResult.getDeletedCount();
+                    logger.info(String.format("The %s documents deleted in the %s collection", deletedCount, mongoCollection.getName()));
+                return deletedCount;
             }));
 
         } catch (FileNotFoundException e) {
@@ -148,72 +162,27 @@ public class StayDeleteService {
         }
         Map<String, Integer> documentCount = new HashMap<>();
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
-        File ymlFile = dataLoader.loadCacheFile(env);
-        Yaml yaml = new Yaml();
+
         Tenant tenantTemp = null;
         try {
-            File resourceFile = dataLoader.loadCacheFile(env);
-            tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
+            tenantTemp = dataLoader.readDataFromCacheFile(env);
         } catch (Exception e) {
             logger.error("Cannot get the details");
         }
-        Map<String, Map<String, ArrayList<String>>> yamlMap;
-        try {
-            yamlMap = yaml.load(new FileInputStream(ymlFile));
-            if (yamlMap.size() != getAllCollections(env).size()) {
-                logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", yamlMap.size(), getAllCollections(env).size());
-            }
-            Tenant finalTenantTemp = tenantTemp;
-            yamlMap.entrySet().stream().parallel().forEach(entry -> {
-                String collectionName = entry.getKey();
-                String tenantPath = "";
-                String propertyPath = "";
-                if (entry.getValue().get("tenantId") != null) {
-                    tenantPath = entry.getValue().get("tenantId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
-                }
-                if (entry.getValue().get("propertyId") != null) {
-                    propertyPath = entry.getValue().get("propertyId").stream().reduce((s1, s2) -> s1 + "." + s2).orElse("");
-                }
-                Criteria criteria = null;
-                if (entry.getKey().equalsIgnoreCase("config") || entry.getKey().equalsIgnoreCase("configEvents")) {
-                    assert finalTenantTemp != null;
-                    Set<String> tenantAndProperty = finalTenantTemp.getProperty();
-                    tenantAndProperty.addAll(finalTenantTemp.getTenant());
-                    if (tenantAndProperty.size() == 0) {
-                        logger.info("No doucuments found for the " + collectionName);
-                        return;
-                    }
-                    String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
-                    criteria = Criteria.where("path").regex(regex);
-
-                } else if (!tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
-                    criteria = new Criteria().orOperator(
-                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()),
-                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
-                    );
-                } else if (tenantPath.equalsIgnoreCase("") && !propertyPath.equalsIgnoreCase("")) {
-                    criteria = new Criteria().orOperator(
-
-                            Criteria.where(propertyPath).in(finalTenantTemp.getProperty())
-                    );
-                } else {
-                    criteria = new Criteria().orOperator(
-                            Criteria.where(tenantPath).in(finalTenantTemp.getTenant()));
-                }
-
-                Query query = new Query(criteria);
-                List<DBObject> documents = mongoTemplate.find(query, DBObject.class, collectionName);
-
-                writeInBson(Paths.get(System.getProperty("user.dir"), "Cloned", collectionName + ".bson"), documents);
-                logger.info(String.format(collectionName + " completed"));
-            });
-            return documentCount.toString();
-
-        } catch (FileNotFoundException e) {
-            return "Cannot make operation";
+        if (mongoPathFactory.size() != getAllCollections(env).size()) {
+            logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(), getAllCollections(env).size());
         }
-    }
+        Tenant finalTenantTemp = tenantTemp;
+        mongoPathFactory.parallelStream().forEach( mongoCollection->{
+            Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
+            List<DBObject> documents = mongoTemplate.find(query, DBObject.class, mongoCollection.getName());
 
+            writeInBson(Paths.get(System.getProperty("user.dir"), "Cloned", mongoCollection.getName() + ".bson"), documents);
+            logger.info(String.format(mongoCollection.getName() + " completed"));
+        });
+        return documentCount.toString();
+
+    }
 
     public String dropAllCollections(String env) {
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
