@@ -34,6 +34,12 @@ public class DataLoader {
     public synchronized Tenant readDataFromCacheFile(String env) throws IOException {
          return objectMapper.readValue(RESOURCE_PATH.resolve(env + ".json").toFile(), Tenant.class);
     }
+    public synchronized Tenant readDataFromBackupFile(String env) throws IOException {
+        return objectMapper.readValue(BACKUP_PATH.resolve(env + ".json").toFile(), Tenant.class);
+    }
+    public synchronized void writeDataIntoBackupFile(String env,Tenant tenant) throws IOException {
+        objectMapper.writeValue(BACKUP_PATH.resolve(env + ".json").toFile(), tenant);
+    }
     public synchronized void writeDataIntoCacheFile(String env,Tenant tenant) throws IOException {
          objectMapper.writeValue(RESOURCE_PATH.resolve(env + ".json").toFile(), tenant);
     }
