@@ -1,6 +1,6 @@
 package com.agilysys.StayTenantPurger.Config;
 
-import com.agilysys.StayTenantPurger.DAO.Tenant;
+import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

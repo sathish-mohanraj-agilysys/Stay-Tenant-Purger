@@ -1,4 +1,4 @@
-package com.agilysys.StayTenantPurger.DAO;
+package com.agilysys.StayTenantPurger.modal.DAO;
 
 public class CollectionPath {
     private String name;

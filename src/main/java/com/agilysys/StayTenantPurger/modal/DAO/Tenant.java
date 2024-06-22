@@ -1,6 +1,5 @@
-package com.agilysys.StayTenantPurger.DAO;
+package com.agilysys.StayTenantPurger.modal.DAO;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 

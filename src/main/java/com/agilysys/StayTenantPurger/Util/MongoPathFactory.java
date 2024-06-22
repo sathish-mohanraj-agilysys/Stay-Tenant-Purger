@@ -1,7 +1,7 @@
 package com.agilysys.StayTenantPurger.Util;
 
 import com.agilysys.StayTenantPurger.Config.DataLoader;
-import com.agilysys.StayTenantPurger.DAO.CollectionPath;
+import com.agilysys.StayTenantPurger.modal.DAO.CollectionPath;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

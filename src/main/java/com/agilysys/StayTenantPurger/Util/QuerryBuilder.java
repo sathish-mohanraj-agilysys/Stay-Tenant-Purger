@@ -1,7 +1,7 @@
 package com.agilysys.StayTenantPurger.Util;
 
-import com.agilysys.StayTenantPurger.DAO.CollectionPath;
-import com.agilysys.StayTenantPurger.DAO.Tenant;
+import com.agilysys.StayTenantPurger.modal.DAO.CollectionPath;
+import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.query.Criteria;

@@ -1,6 +1,6 @@
 package com.agilysys.StayTenantPurger.Controller;
 
-import com.agilysys.StayTenantPurger.DAO.Tenant;
+import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
 import com.agilysys.StayTenantPurger.Interfaces.StayDeleteInterface;
 import com.agilysys.StayTenantPurger.Service.CoreDeleteSerive;
 import com.agilysys.StayTenantPurger.Service.StayDeleteService;
@@ -79,7 +79,7 @@ public class Controller implements StayDeleteInterface {
 
     public Map<String, Integer> getDocumentCount(String env) {
         ensureCaching(env);
-        return stayDeleteService.getDocumentCount(env);
+        return stayDeleteService.getDocumentCount(env,null);
     }
 
 

@@ -1,8 +1,8 @@
 package com.agilysys.StayTenantPurger.Service;
 
 import com.agilysys.StayTenantPurger.Config.DataLoader;
-import com.agilysys.StayTenantPurger.DAO.CollectionPath;
-import com.agilysys.StayTenantPurger.DAO.Tenant;
+import com.agilysys.StayTenantPurger.modal.DAO.CollectionPath;
+import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
 import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
 import com.mongodb.client.MongoCursor;
@@ -21,6 +21,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -218,7 +220,7 @@ public class StayDeleteService {
         return mongoTemplate.getCollectionNames();
     }
 
-    public Map<String, Integer> getDocumentCount(String env) {
+    public Map<String, Integer> getDocumentCount(String env, WebSocketSession session) {
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
         return mongoTemplate.getCollectionNames().parallelStream()
                 .collect(Collectors.toMap(
@@ -226,6 +228,15 @@ public class StayDeleteService {
                         collectionName -> {
                             long count = mongoTemplate.getCollection(collectionName).countDocuments();
                             logger.info("{} documents are in {} collection in {}", count, collectionName, env);
+                           if(null!=session){
+                               try {
+                                   synchronized (session){
+                                       session.sendMessage(new TextMessage(collectionName +count));
+                                   }
+                               } catch (IOException e) {
+                                   throw new RuntimeException(e);
+                               }
+                           }
                             return (int) count;
                         }
                 ));

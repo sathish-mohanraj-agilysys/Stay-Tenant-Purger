@@ -1,6 +1,6 @@
 package com.agilysys.StayTenantPurger.Interfaces;
 
-import com.agilysys.StayTenantPurger.DAO.Tenant;
+import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
