@@ -64,22 +64,16 @@ public class StayDeleteService {
     public ResponseEntity deleteInMongodb(String env, boolean isToDeleteCore) {
         Map<String, Integer> deletedOut = new HashMap<>();
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
-        File ymlFile = dataLoader.loadYMlFile();
-        Yaml yaml = new Yaml();
-        Tenant tenantTemp = null;
-        try {
-            File resourceFile = dataLoader.loadCacheFile(env);
-            tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
-        } catch (Exception e) {
-            System.out.println("cannot initiate the delete operation");
-        }
+        Tenant tenantToDelete = null;
         Map<String, Map<String, ArrayList<String>>> yamlMap;
+
         try {
-            yamlMap = yaml.load(new FileInputStream(ymlFile));
+            tenantToDelete =dataLoader.readDataFromCacheFile(env);
+            yamlMap = dataLoader.readYMlFile();
             if (yamlMap.size() != getAllCollections(env).size()) {
                 logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", yamlMap.size(), getAllCollections(env).size());
             }
-            Tenant finalTenantTemp = tenantTemp;
+            Tenant finalTenantTemp = tenantToDelete;
             yamlMap.entrySet().stream().parallel().forEach(entry -> {
                 String collectionName = entry.getKey();
                 String tenantPath = "";
@@ -128,22 +122,19 @@ public class StayDeleteService {
 
         } catch (FileNotFoundException e) {
             return new ResponseEntity<>("Cannot not open the file", HttpStatus.FORBIDDEN);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Cannot able to get the cache data", HttpStatus.FORBIDDEN);
         }
         try {
-            File resourceFile = dataLoader.loadCacheFile(env);
-            File backUpFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "Backup", env + ".json").toFile();
-            Tenant resourceTenant = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
-            Tenant backupTenant = objectMapper.readValue(new FileInputStream(backUpFile), Tenant.class);
-            backupTenant.getTenant().addAll(resourceTenant.getTenant());
-            backupTenant.getProperty().addAll(resourceTenant.getProperty());
-            objectMapper.writeValue(backUpFile, backupTenant);
-            logger.info("Deleted tenant property is successfully backed up ");
-            resourceTenant.getTenant().clear();
-            resourceTenant.getProperty().clear();
-            objectMapper.writeValue(resourceFile, resourceTenant);
-            logger.info("Local Cache is successfully cleaned");
+            Tenant backupTenant = dataLoader.readDataFromBackupFile(env);
+            backupTenant.getTenant().addAll(tenantToDelete.getTenant());
+            backupTenant.getProperty().addAll(tenantToDelete.getProperty());
+            dataLoader.writeDataIntoBackupFile(env,backupTenant);
+            logger.info("Deleted details is successfully backed up for the {} environment",env);
+            dataLoader.writeDataIntoCacheFile(env,new Tenant());
+            logger.info("Local Cache is successfully cleaned for {} environment",env);
         } catch (Exception e) {
-            logger.error("Cannot able to back up the data");
+            logger.error("Error in backup for {} environment",env);
         }
 
         return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb /n" + deletedOut.toString(), yamlMap.size(), getAllCollections(env).size(), env), HttpStatus.OK);
