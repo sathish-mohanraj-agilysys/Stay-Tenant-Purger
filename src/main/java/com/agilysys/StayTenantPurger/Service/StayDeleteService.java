@@ -10,9 +10,7 @@ import org.bson.BsonBinaryWriter;
 import org.bson.BsonWriter;
 import org.bson.Document;
 import org.bson.codecs.DocumentCodec;
-import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.io.BasicOutputBuffer;
-import org.bson.io.OutputBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,17 +53,14 @@ public class StayDeleteService {
 
 
     public String storData(Tenant tenant, String env) {
-        File resourceFile = dataLoader.loadCacheFile(env);
-
         try {
-
-            Tenant temp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
+            Tenant temp = dataLoader.readDataFromCacheFile(env);
             temp.getTenant().addAll(tenant.getTenant());
             temp.getProperty().addAll(tenant.getProperty());
-            objectMapper.writeValue(resourceFile, temp);
+            dataLoader.writeDataIntoCacheFile(env, temp);
             return temp.toString();
         } catch (IOException e) {
-            return "File not found";
+            return String.format("Caching not found for the %s environment: %s", env, e.getMessage());
         }
     }
 
@@ -76,7 +71,7 @@ public class StayDeleteService {
         Yaml yaml = new Yaml();
         Tenant tenantTemp = null;
         try {
-            File resourceFile =dataLoader.loadCacheFile(env);
+            File resourceFile = dataLoader.loadCacheFile(env);
             tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
         } catch (Exception e) {
             System.out.println("cannot initiate the delete operation");
@@ -138,7 +133,7 @@ public class StayDeleteService {
             return new ResponseEntity<>("Cannot not open the file", HttpStatus.FORBIDDEN);
         }
         try {
-            File resourceFile =dataLoader.loadCacheFile(env);
+            File resourceFile = dataLoader.loadCacheFile(env);
             File backUpFile = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "Backup", env + ".json").toFile();
             Tenant resourceTenant = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
             Tenant backupTenant = objectMapper.readValue(new FileInputStream(backUpFile), Tenant.class);
@@ -251,11 +246,11 @@ public class StayDeleteService {
         }
         Map<String, Integer> documentCount = new HashMap<>();
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
-        File ymlFile =dataLoader.loadCacheFile(env);
+        File ymlFile = dataLoader.loadCacheFile(env);
         Yaml yaml = new Yaml();
         Tenant tenantTemp = null;
         try {
-            File resourceFile =dataLoader.loadCacheFile(env);
+            File resourceFile = dataLoader.loadCacheFile(env);
             tenantTemp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
         } catch (Exception e) {
             logger.error("Cannot get the details");
