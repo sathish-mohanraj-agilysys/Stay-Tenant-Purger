@@ -1,6 +1,7 @@
 package com.agilysys.StayTenantPurger.Service;
 
 import com.agilysys.StayTenantPurger.Config.DataLoader;
+import com.agilysys.StayTenantPurger.DAO.CollectionPath;
 import com.agilysys.StayTenantPurger.DAO.Tenant;
 import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
@@ -156,26 +157,24 @@ public class StayDeleteService {
     }
 
     public String getDocumentCountFromCacheDetails(String env) {
-        Map<String, Integer> documentCount = new HashMap<>();
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
        Set<String>collections= getAllCollections(env);
         Tenant tenantTemp = null;
         try {
             tenantTemp = dataLoader.readDataFromCacheFile(env);
         } catch (Exception e) {
-            logger.error("Cannot get the details");
+            logger.error("Cannot able to load Cache for {} enironment",env);
         }
         if (mongoPathFactory.size() !=collections.size()) {
-            logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(),collections.size());
+            logger.warn("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(),collections.size());
         }
         Tenant finalTenantTemp = tenantTemp;
-        mongoPathFactory.parallelStream().forEach(mongoCollection -> {
+        return  mongoPathFactory.parallelStream().collect(Collectors.toMap(CollectionPath::getName, mongoCollection->{
             Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
             long count = mongoTemplate.count(query, mongoCollection.getName());
             logger.info(String.format("%s documents present in the %s collection from the cache, in the %s environment", count, mongoCollection.getName(), env));
-            documentCount.put(mongoCollection.getName(), (int) count);
-        });
-        return documentCount.toString();
+            return count;
+        })).toString();
 
     }
 
