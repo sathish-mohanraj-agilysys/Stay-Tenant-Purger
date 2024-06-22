@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class StayDeleteService {
+    private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -47,10 +48,6 @@ public class StayDeleteService {
     private CoreDeleteSerive coreDeleteSerive;
     @Autowired
     private DataLoader dataLoader;
-
-
-    private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
-
 
     public String storData(Tenant tenant, String env) {
         try {
@@ -154,18 +151,12 @@ public class StayDeleteService {
 
 
     public String clearInLocal(String env) {
-        File resourceFile = dataLoader.loadCacheFile(env);
         try {
-            Tenant temp = objectMapper.readValue(new FileInputStream(resourceFile), Tenant.class);
-            temp.getProperty().clear();
-            temp.getTenant().clear();
-            objectMapper.writeValue(resourceFile, temp);
+            dataLoader.writeDataIntoCacheFile(env, new Tenant());
             logger.info("The tenant and property data in the local cache has been cleared for the " + env + "environment");
-
-            logger.info(temp.toString());
-            return temp.toString();
+            return dataLoader.readDataFromCacheFile(env).toString();
         } catch (Exception e) {
-            return "Cannot open the source file";
+            return String.format("Error in clearing the cache for the %s environment ", env) + e;
         }
 
     }
