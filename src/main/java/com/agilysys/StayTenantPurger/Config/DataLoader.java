@@ -20,8 +20,8 @@ public class DataLoader {
     @Autowired
     ObjectMapper  objectMapper;
     Yaml yaml = new Yaml();
-    public Path RESOURCE_PATH = Paths.get(System.getProperty("user.dir"), "src", "main", "resources");
-    public Path BACKUP_PATH = RESOURCE_PATH.resolve("Backup");
+    private Path RESOURCE_PATH = Paths.get(System.getProperty("user.dir"), "src", "main", "resources");
+    private Path BACKUP_PATH = RESOURCE_PATH.resolve("Backup");
     public String YAML_NAME="rGuestStaymap.yml";
 
     public synchronized File loadYMlFile() {
