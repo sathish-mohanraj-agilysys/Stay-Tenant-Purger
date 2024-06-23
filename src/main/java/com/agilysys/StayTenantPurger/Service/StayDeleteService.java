@@ -10,6 +10,7 @@ import com.mongodb.client.result.DeleteResult;
 import org.bson.BsonBinaryWriter;
 import org.bson.BsonWriter;
 import org.bson.Document;
+import org.bson.codecs.DecoderContext;
 import org.bson.codecs.DocumentCodec;
 import org.bson.io.BasicOutputBuffer;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,6 +73,7 @@ public class StayDeleteService {
 
         try {
             tenantToDelete = dataLoader.readDataFromCacheFile(env);
+            Set<String> taskRemaining=mongoPathFactory.stream().map(CollectionPath::getName).collect(Collectors.toSet());
             if (mongoPathFactory.size() != getAllCollections(env).size()) {
                 logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(), collections.size());
             }
@@ -90,10 +93,12 @@ public class StayDeleteService {
                         isPresent = false;
                     }
                 }
-
+                taskRemaining.remove(mongoCollection.getName());
                 if (deletedCount == 0) logger.info("No doucuments found for the " + mongoCollection.getName());
                 else
                     logger.info(String.format("The %s documents deleted in the %s collection", deletedCount, mongoCollection.getName()));
+                logger.info("Remaining collections are {}",taskRemaining);
+
                 return deletedCount;
             }));
 
@@ -169,6 +174,7 @@ public class StayDeleteService {
             logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(), getAllCollections(env).size());
         }
         Tenant finalTenantTemp = tenantTemp;
+        Set<String> taskRemaining=mongoPathFactory.stream().map(CollectionPath::getName).collect(Collectors.toSet());
         mongoPathFactory.parallelStream().forEach(mongoCollection -> {
             Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
             Path outputPath = CLONING_PATH.resolve(mongoCollection.getName() + ".bson");
@@ -178,9 +184,7 @@ public class StayDeleteService {
                 while (cursor.hasNext()) {
                     batch.add(cursor.next());
                     if (batch.size() >= BATCH_SIZE) {// Process in batches of 1000 documents
-                        System.out.println("going to write " + mongoCollection.getName());
                         writeInBson(outputPath, batch);
-                        System.out.println("write completed " + mongoCollection.getName());
                         batch.clear();
                     }
                 }
@@ -188,6 +192,9 @@ public class StayDeleteService {
                     writeInBson(outputPath, batch);
                 }
             }
+            taskRemaining.remove(mongoCollection.getName());
+            logger.info("Remaining collections are {}",taskRemaining);
+
             logger.info(String.format(mongoCollection.getName() + " completed"));
         });
         return "Successfully backed up";
