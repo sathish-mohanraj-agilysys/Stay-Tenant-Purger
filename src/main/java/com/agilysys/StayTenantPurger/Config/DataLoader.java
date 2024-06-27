@@ -25,7 +25,7 @@ public class DataLoader {
     public String YAML_NAME="rGuestStaymap.yml";
 
     public synchronized File loadYMlFile() {
-        return RESOURCE_PATH.resolve(YAML_NAME).toFile();
+        return Paths.get(System.getProperty("user.dir"),YAML_NAME).toFile();
     }
 
     public synchronized File loadCacheFile(String env) {
