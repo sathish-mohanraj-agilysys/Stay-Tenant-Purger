@@ -43,7 +43,7 @@ public class Controller implements StayDeleteInterface {
 
     public String addTenantInCache(@RequestBody Tenant tenant, @PathVariable("environment") String env) {
         ensureCaching(env);
-        return stayDeleteService.storData(tenant, env);
+        return stayDeleteService.storeData(tenant, env);
     }
 
     public ResponseEntity startDeleting(@PathVariable("environment") String env, boolean isToDeleteCore) {
