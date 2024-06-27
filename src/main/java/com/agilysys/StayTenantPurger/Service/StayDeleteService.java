@@ -201,10 +201,10 @@ public class StayDeleteService {
 
     public String dropAllCollections(String env) {
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
-        for (String collection : mongoTemplate.getCollectionNames()) {
+        mongoTemplate.getCollectionNames().parallelStream().forEach(collection->{
             mongoTemplate.dropCollection(collection);
             logger.info(String.format("Dropped the %s collection", collection));
-        }
+        });
         return "Successfully dropped";
     }
 
