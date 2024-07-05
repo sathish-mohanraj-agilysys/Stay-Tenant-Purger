@@ -41,6 +41,10 @@ public class MongoConfig {
     private String lab002Uri;
     @Value("${spring.data.mongodb.database002}")
     private String lab002Database;
+    @Value("${spring.data.mongodb.uriui}")
+    private String labuiUri;
+    @Value("${spring.data.mongodb.databaseui}")
+    private String labuiDatabase;
     @Value("${spring.data.mongodb.uri001}")
     private String lab001Uri;
     @Value("${spring.data.mongodb.database001}")
@@ -82,5 +86,9 @@ public class MongoConfig {
     @Bean(name = "001")
     public MongoTemplate getMongoTemplateLab001() {
         return new MongoTemplate(MongoClients.create(lab001Uri), lab001Database);
+    }
+    @Bean(name = "ui")
+    public MongoTemplate getMongoTemplateLabui() {
+        return new MongoTemplate(MongoClients.create(labuiUri), labuiDatabase);
     }
 }
