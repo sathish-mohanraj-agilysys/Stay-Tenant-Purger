@@ -32,14 +32,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
 public class StayDeleteService {
-    private final int BATCH_SIZE = 10000;
+    private final int BATCH_SIZE = 30000;
     private final Path CLONING_PATH = Paths.get(System.getProperty("user.dir"), "Cloned");
     private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
     @Autowired
@@ -63,7 +70,7 @@ public class StayDeleteService {
         }
     }
 
-    public ResponseEntity deleteInMongodb(String env, boolean isToDeleteCore) {
+    public ResponseEntity<String> deleteInMongodb(String env, boolean isToDeleteCore) {
         Set<String> collections = getAllCollections(env);
         Map<String, Integer> deletedOut;
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
@@ -71,55 +78,81 @@ public class StayDeleteService {
 
         try {
             tenantToDelete = dataLoader.readDataFromCacheFile(env);
-            Set<String> taskRemaining = mongoPathFactory.stream().map(CollectionPath::getName).collect(Collectors.toSet());
-            if (mongoPathFactory.size() != getAllCollections(env).size()) {
+            Set<String> taskRemaining = ConcurrentHashMap.newKeySet();
+             taskRemaining.addAll( mongoPathFactory.stream().map(CollectionPath::getName).collect(Collectors.toSet()));
+            if (mongoPathFactory.size() != collections.size()) {
                 logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(), collections.size());
             }
             Tenant finalTenantTemp = tenantToDelete;
-            deletedOut = mongoPathFactory.parallelStream().collect(Collectors.toMap(CollectionPath::getName, mongoCollection -> {
-                boolean isPresent = true;
-                int deletedCount = 0;
-                Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
-                query.limit(BATCH_SIZE);
-                while (isPresent) {
-                    List<Document> documents = mongoTemplate.find(query, Document.class, mongoCollection.getName());
-                    if (!documents.isEmpty()) {
-                        Criteria batchCriteria = Criteria.where("_id").in(documents.stream().map(x -> x.get("_id")).collect(Collectors.toSet()));
-                        DeleteResult deleteResult = mongoTemplate.remove(new Query(batchCriteria), Object.class, mongoCollection.getName());
-                        deletedCount += (int) deleteResult.getDeletedCount();
-                    } else {
-                        isPresent = false;
-                    }
-                }
-                taskRemaining.remove(mongoCollection.getName());
-                if (deletedCount == 0) logger.info("No documents found for the {}" ,mongoCollection.getName());
-                else
-                    logger.info(String.format("The %s documents deleted in the %s collection", deletedCount, mongoCollection.getName()));
-                logger.info("Remaining collections are {}", taskRemaining);
+            ExecutorService executorService = Executors.newFixedThreadPool(100);
+            Map<String, Future<Integer>> futureResults = new HashMap<>();
 
-                return deletedCount;
-            }));
+            mongoPathFactory.forEach(mongoCollection -> {
+                Callable<Integer> task = () -> {
+                    boolean isPresent = true;
+                    int deletedCount = 0;
+                    Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
+                    query.limit(BATCH_SIZE);
+                    int count =0;
+                    while (isPresent) {
+                        count++;
+                        logger.info("Going to start {} batch querying in  {} collection" ,count,mongoCollection.getName());
+                        List<Document> documents = mongoTemplate.find(query, Document.class, mongoCollection.getName());
+                        logger.info("Got the output {} batch in  {} collection" ,count,mongoCollection.getName());
+                        if (!documents.isEmpty()) {
+                            Criteria batchCriteria = Criteria.where("_id").in(documents.stream().map(x -> x.get("_id")).collect(Collectors.toSet()));
+                            logger.info("Going to start {} batch deleting in {} collection" ,count,mongoCollection.getName());
+                            DeleteResult deleteResult = mongoTemplate.remove(new Query(batchCriteria), Object.class, mongoCollection.getName());
+                            logger.info("Deleting completed for {} batch  in {} collection" ,count,mongoCollection.getName());
+                            deletedCount += (int) deleteResult.getDeletedCount();
+                        } else {
+                            isPresent = false;
+                        }
+                    }
+                    taskRemaining.remove(mongoCollection.getName());
+                    if (deletedCount == 0) {
+                        logger.info("No documents found for the {}", mongoCollection.getName());
+                    } else {
+                        logger.info("The {} documents deleted in the {} collection", deletedCount, mongoCollection.getName());
+                    }
+                    logger.info("Remaining collections are {}", taskRemaining);
+                    return deletedCount;
+                };
+                futureResults.put(mongoCollection.getName(), executorService.submit(task));
+            });
+
+            deletedOut = new HashMap<>();
+            for (Map.Entry<String, Future<Integer>> entry : futureResults.entrySet()) {
+                try {
+                    deletedOut.put(entry.getKey(), entry.getValue().get());
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.error("Error processing collection {}: {}", entry.getKey(), e.getMessage());
+                }
+            }
+
+            executorService.shutdown();
 
         } catch (FileNotFoundException e) {
             return new ResponseEntity<>("Cannot not open the file", HttpStatus.FORBIDDEN);
         } catch (IOException e) {
             return new ResponseEntity<>("Cannot able to get the cache data", HttpStatus.FORBIDDEN);
         }
+
         try {
             Tenant backupTenant = dataLoader.readDataFromBackupFile(env);
             backupTenant.getTenant().addAll(tenantToDelete.getTenant());
             backupTenant.getProperty().addAll(tenantToDelete.getProperty());
             dataLoader.writeDataIntoBackupFile(env, backupTenant);
-            logger.info("Deleted details is successfully backed up for the {} environment", env);
+            logger.info("Deleted details are successfully backed up for the {} environment", env);
             dataLoader.writeDataIntoCacheFile(env, new Tenant());
             logger.info("Local Cache is successfully cleaned for {} environment", env);
         } catch (Exception e) {
             logger.error("Error in backup for {} environment", env);
         }
 
-        return new ResponseEntity<>(String.format("The process Success but collection size mismatch found!, %s collections found in configuration file and %s collections found in the %s mongodb /n" + deletedOut, mongoPathFactory.size(), collections.size(), env), HttpStatus.OK);
+        return new ResponseEntity<>(String.format("The process succeeded but collection size mismatch found! %d collections found in configuration file and %d collections found in the %s MongoDB.\nDeleted documents: %s",
+                mongoPathFactory.size(), collections.size(), env, deletedOut), HttpStatus.OK);
     }
-
 
     public String clearInLocal(String env) {
         try {
