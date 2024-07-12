@@ -29,11 +29,28 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+		<dependency>
+			<artifactId>logback-classic</artifactId>
+			<groupId>ch.qos.logback</groupId>
+		</dependency>
+		<dependency>
+			<artifactId>guava</artifactId>
+			<groupId>com.google.guava</groupId>
+			<version>27.0.1-jre</version>
+		</dependency>
+		<dependency>
+			<artifactId>jackson-datatype-guava</artifactId>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<version>2.14.3</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<artifactId>woodstox-core</artifactId>
+			<groupId>com.fasterxml.woodstox</groupId>
 		</dependency>
 		<dependency>
 			<groupId>org.yaml</groupId>
