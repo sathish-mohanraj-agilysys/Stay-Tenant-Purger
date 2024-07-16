@@ -4,7 +4,136 @@ config:
 configEvents:
  path:
   - tenant
+AutoCheckoutSettings:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+FieldNameCustomization:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+FolioCustomizationSettings:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+GroupSharedReservation:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+InventoryItemAllocation:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ItemTypeDomain:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+LoyaltyIntegrationConfig:
+ tenantId:
+  - tenantId
+MaintenanceStaffMember:
+ tenantId:
+  - tenantId
+ propertyId:
+  - staffMemberPropertyAssignments
+  - propertyId
+OwnersRevPar:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+PlayerRetailRatingDetails:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+PosPmsItems:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+PosPmsItemsDataPorter:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+QueueRoomMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
+QueueRoomPublisherMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
+ScheduledDepositDueSnapshot:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+SelfCheckInCheckOutSetup:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+SelfCheckInCheckOutSetupImages:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+StaffMember:
+ tenantId:
+  - tenantId
+ propertyId:
+  - staffMemberPropertyAssignments
+  - propertyId
+StorageDetails:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+Teams:
+ tenantId:
+  - tenantId
+ propertyId:
+  - teamPropertyAssignmentDomain
+  - propertyId
+UpdatedRoomStatusesResponse:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+account:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+accountBalanceMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
 accountBalances:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
+accountBalances_172675:
  tenantId:
   - _id
   - tenantId
@@ -28,12 +157,7 @@ accountHistories:
   - tenantId
  propertyId:
   - propertyId
-accountingDate:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-accountingItems:
+accountMutex:
  tenantId:
   - _id
   - tenantId
@@ -47,11 +171,36 @@ accountRecurringChargesStatus:
  propertyId:
   - _id
   - propertyId
+accountReference:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+accountSequenceNumbers:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+accountingDate:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+accountingItems:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
 accounts:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
+activeUsers:
+ tenantId:
+  - tenantId
 adHocReportAudit:
  tenantId:
   - ti
@@ -61,12 +210,60 @@ adHocScheduledUserDetails:
  tenantId:
   - _id
   - tenantId
+adapterChecksums:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+adapterFailedSessionTasks:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+adapterFailedSessions:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+adapterOutbound:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+adapterTasks:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+addOnRevenues:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+adjustCharges:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+admTemplate:
+ tenantId:
+  - tenantId
+alertNotification:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 allocationEventStream:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
 allocations:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+allowanceCombination:
  tenantId:
   - tenantId
  propertyId:
@@ -88,26 +285,10 @@ appCuesConfig:
  tenantId:
   - tenantId
  propertyId:
-  - propertyId"
-appliance:
- propertyId:
   - propertyId
-applianceCommandMessage:
- propertyId:
-  - propertyId
-applianceCommandResponse:
- propertyId:
-  - propertyId
-applianceMapping:
- propertyId:
-  - propertyId
-appliancePasswordManagementHistoryDao:
- propertyId:
-  - propertyId
-applianceSessionHistory:
- propertyId:
-  - propertyId
-applianceTransactions:
+arDefaults:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 arDeposit:
@@ -115,27 +296,68 @@ arDeposit:
   - tenantId
  propertyId:
   - propertyId
+ariCache:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ariChangeStatus:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ariStatus:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
+asyncJobResponse:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+auditCommits:
+ tenantId:
+  - c
+  - t
+ propertyId:
+  - c
+  - p
+auditEntities:
+ tenantId:
+  - _id
+  - ti
+ propertyId:
+  - _id
+  - pi
 authorizationHistory:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
-authSessionCache:
- propertyId:
-  - propertyId
 autoAssignAndConfirmJob:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
+autoCheckInManualStartStopDomain:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 autoCollectDeposit:
  tenantId:
   - tenantId
- propertyId:
-  - _id
+autoCollectGroupDeposit:
+ tenantId:
+  - tenantId
 autoNightAudit:
  tenantId:
   - tenantId
- propertyId:
-  - _id
 autoNightAuditErrors:
  tenantId:
   - _id
@@ -155,17 +377,53 @@ autoRecurringChargeStatus:
  propertyId:
   - _id
   - propertyId
+autoSettlementRule:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+backToBackReservations:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+baggageLocation:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+batchAddCommentAndMessageMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
 batchDistributions:
  tenantId:
   - tenantId
  propertyId:
+  - propertyId
+batchDistributorMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
   - propertyId
 batchRooms:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
+batchStatus:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 binSettings:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 bookingChannelEventStream:
@@ -181,12 +439,37 @@ bookingChannels:
 businessContext:
  tenantId:
   - tenantId
+cashierActivityDetails:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+cashierSettings:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 casinoPointIssuanceSettings:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
 casinoTier:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+checkoutScheduler:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+columnCustomization:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+columnCustomizationSettings:
  tenantId:
   - tenantId
  propertyId:
@@ -234,12 +517,17 @@ compOffers:
   - tenantId
  propertyId:
   - propertyId
-componentBundles:
+compRestrictions:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
 compReverseRedemptionResponseDomain:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+componentBundles:
  tenantId:
   - tenantId
  propertyId:
@@ -262,9 +550,6 @@ contents:
   - tenantId
  propertyId:
   - propertyId
-copyReservationJobs:
- propertyId:
-  - propertyId
 copyReservationsJobs:
  tenantId:
   - tenantId
@@ -272,8 +557,8 @@ copyReservationsJobs:
   - propertyId
 corruptedEntities:
  tenantId:
-   - _id
-   - tenantId
+  - _id
+  - tenantId
  propertyId:
   - _id
   - propertyId
@@ -290,6 +575,11 @@ createInvoiceStatus:
   - _id
   - propertyId
 creditCardAuthRuleSettings:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+creditTerms:
  tenantId:
   - tenantId
  propertyId:
@@ -324,21 +614,44 @@ departmentDetails:
   - tenantId
  propertyId:
   - propertyId
+digitalCheckIn:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+digitalProtectedInventory:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+digitalSettings:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+doNotMoveGuest:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 documentDetails:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
 documentTypes:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 earlyCheckInLateCheckoutFees:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
-earlyCheckoutFees:
- propertyId:
-  - propertyId
-emailedReports:
+earlyDeparturePolicy:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 emailPrintTracking:
@@ -346,20 +659,32 @@ emailPrintTracking:
   - tenantId
  propertyId:
   - propertyId
-eonsActivity:
- propertyId:
-  - entity
-  - propertyId
-events:
+emailedReports:
  tenantId:
   - tenantId
  propertyId:
+  - propertyId
+eonsActivity:
+ tenantId:
+  - entity
+  - tenantId
+ propertyId:
+  - entity
   - propertyId
 eventTypes:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
+events:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+externalLoyaltyProfile:
+ tenantId:
+  - _id
+  - tenantId
 failedAuth:
  tenantId:
   - tenantId
@@ -372,24 +697,87 @@ featureToggleMutex:
 featureToggles:
  tenantId:
   - tenantId
+fieldSettings:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 fiscalYear:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
 folioInvoices:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 foreignExchangeDetails:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+freeDomPayEODResponse:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+functionRoomAudioVisual:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+functionRoomCancellationPolicy:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+functionRoomConfiguration:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+functionRoomFacility:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+functionRoomFoodAndBeverage:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+functionRoomInventoryBlock:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+functionRoomStyle:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 gdprCommits:
  tenantId:
   - tenantId
-gdprSettings:
+giftCardSettings:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+groupDefaults:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+groupMutex:
  tenantId:
   - _id
-giftCardSettings:
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
+groupReportFavouritesExecution:
  tenantId:
   - tenantId
  propertyId:
@@ -399,13 +787,27 @@ groups:
   - tenantId
  propertyId:
   - propertyId
-GroupSharedReservation:
- propertyId:
-  - propertyId
 guestConsentPolicyDetails:
  tenantId:
   - tenantId
+guestHistoryMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
+guestLedgerVersion:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 guestMessage:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+guestMessageCounter:
  tenantId:
   - tenantId
  propertyId:
@@ -415,6 +817,9 @@ guestMessageEventStream:
   - tenantId
  propertyId:
   - propertyId
+guestProfileReference:
+ tenantId:
+  - tenantId
 guestSatisfactionCategories:
  tenantId:
   - tenantId
@@ -433,7 +838,6 @@ guestSatisfactionSettings:
 guestServiceRequestEventStream:
  tenantId:
   - events
-  - _id
   - tenantId
  propertyId:
   - events
@@ -449,8 +853,9 @@ guestServiceRequestsCounter:
  propertyId:
   - propertyId
 guestStayHistory:
- tenantId:
-  - tenantId
+ propertyId:
+  - pastStaysReservationIds
+  - propertyId
 homepagePreference:
  tenantId:
   - _id
@@ -462,15 +867,29 @@ houseKeepingServiceRequestEventStream:
  propertyId:
   - events
   - propertyId
+housekeepingBoards:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+housekeepingNotifications:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 housekeepingServiceRequests:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
 httpCache:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 igTransaction:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 importEntries:
@@ -478,6 +897,9 @@ importEntries:
   - tenantId
  propertyId:
   - propertyId
+importEntriesFieldMap:
+ tenantId:
+  - tenantId
 importEntryFileDomain:
  tenantId:
   - tenantId
@@ -488,10 +910,17 @@ importExport:
   - tenantId
  propertyId:
   - propertyId
-InventoryItemAllocation:
+inventoryItemAllocation:
  tenantId:
   - tenantId
  propertyId:
+  - propertyId
+inventoryItemMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
   - propertyId
 invoiceEventStream:
  tenantId:
@@ -532,6 +961,16 @@ jobs:
   - tenantId
  propertyId:
   - propertyId
+keyAccessConfig:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+keyHistory:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 lastRoomValues:
  tenantId:
   - tenantId
@@ -554,6 +993,11 @@ ledgerSettings:
   - tenantId
  propertyId:
   - propertyId
+ledgerTransactionUpdates:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 ledgerTransactions:
  tenantId:
   - tenantId
@@ -564,7 +1008,7 @@ ledgerTransactionsFlags:
   - tenantId
  propertyId:
   - propertyId
-LedgerTransactionUpdates:
+linkedGroups:
  tenantId:
   - tenantId
  propertyId:
@@ -578,6 +1022,8 @@ linkedReservation:
  propertyId:
   - propertyId
 losHKPattern:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 lostAndFoundEventStream:
@@ -600,15 +1046,30 @@ lostBusinessTracking:
   - tenantId
  propertyId:
   - propertyId
+loyaltyEnrollmentAlertDetails:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+loyaltyEnrollmentFeatureSetting:
+ tenantId:
+  - tenantId
 loyaltyHKPatterns:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
-maintenanceServiceRequestEventStream:
+loyaltyProgramEnrollment:
+ tenantId:
+  - tenantId
  propertyId:
-  - events
   - propertyId
+loyaltyProgramEntity:
+ tenantId:
+  - tenantId
+loyaltyProgramSetUp:
+ tenantId:
+  - tenantId
 maintenanceServiceRequests:
  tenantId:
   - tenantId
@@ -619,13 +1080,17 @@ maintenanceServiceRequestsCounter:
   - tenantId
  propertyId:
   - propertyId
-MaintenanceStaffMember:
+multipleReservationResponseDomain:
  tenantId:
   - tenantId
  propertyId:
-  - staffMemberPropertyAssignments
   - propertyId
 nextAccountNumbers:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+noteOfTheDay:
  tenantId:
   - tenantId
  propertyId:
@@ -635,8 +1100,12 @@ offlineAuthInformation:
   - tenantId
  propertyId:
   - propertyId
-operationLock:
+otaInterfaceMappings:
+ tenantId:
+  - _id
+  - tenantId
  propertyId:
+  - _id
   - propertyId
 otaManualSyncStatus:
  tenantId:
@@ -649,14 +1118,40 @@ otaMetrics:
  propertyId:
   - propertyId
 otaOutboundEntity:
+ tenantId:
+  - tenantId
  propertyId:
+  - propertyId
+otaOutboundReSyncMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
   - propertyId
 otaReSyncStatus:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
-OwnersRevPar:
+otaTransactionAttachments:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+otaTransactionRevisions:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+otaTransactions:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ownerTypeCategorization:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 pantryItems:
@@ -695,22 +1190,32 @@ planAttributes:
   - tenantId
  propertyId:
   - propertyId
-pmsProperties:
+pmsMutex:
  tenantId:
+  - _id
   - tenantId
  propertyId:
   - _id
-PosPmsItems:
+  - propertyId
+pmsProperties:
+ tenantId:
+  - tenantId
+posInterfaceSettings:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
-PosPmsItemsDataPorter:
+posPmsItemsDataPorter:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
 postPaymentResponse:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+postingRuleStatus:
  tenantId:
   - tenantId
  propertyId:
@@ -727,28 +1232,63 @@ profileAnonymizeEntities:
 profileEventStream:
  tenantId:
   - tenantId
+ propertyId:
+  - events
+  - propertyId
 profileOptions:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
-profiles:
- tenantId:
-  - tenantId
 profileSettings:
  tenantId:
   - tenantId
-propertyRates:
+profiles:
  tenantId:
   - tenantId
- propertyId:
-  - propertyId
 propertyRateYield:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
+propertyRates:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+propertyRatesMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
 propertySettings:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+propertyStatusSettings:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+queueColumnPreferenceConfig:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+queueRoomDashboardDomain:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+queueRoomPriorityLookUpDomain:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+queueRoomSettings:
  tenantId:
   - tenantId
  propertyId:
@@ -763,7 +1303,52 @@ rateAllocationGroupDetails:
   - tenantId
  propertyId:
   - propertyId
+rateCalendar:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+rateChangeHistory:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+rateFactor:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 rateOverrides:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+rateOverrides_vmb:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ratePlan:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ratePlan_viejas:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+rateStrategy:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ratesConfig:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+reasons:
  tenantId:
   - tenantId
  propertyId:
@@ -778,7 +1363,36 @@ relayDeviceMapping:
   - tenantId
  propertyId:
   - propertyId
+relayMessageJob:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
 relayMessages:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+reportFavouriteJobMutex:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
+reportFavourites:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+reportFavouritesGenerationInfo:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+reportFavouritesGroup:
  tenantId:
   - tenantId
  propertyId:
@@ -798,6 +1412,13 @@ reservationBookingNotice:
   - tenantId
  propertyId:
   - propertyId
+reservationCreationJob:
+ tenantId:
+  - _id
+  - tenantId
+ propertyId:
+  - _id
+  - propertyId
 reservationDailySnapshot:
  tenantId:
   - tenantId
@@ -808,17 +1429,45 @@ reservationEventStream:
   - tenantId
  propertyId:
   - propertyId
+reservationHousekeepingHistory:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 reservationInternal:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
-roomMoveReasons:
+reservationReference:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
-rooms:
+reservationSuppressAlerts:
+ tenantId:
+  - tenantId
+resourceAssignmentPlans:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+restrictedItems:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+reverseChargeReasons:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+revokeKeyHistory:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+roomMoveReasons:
  tenantId:
   - tenantId
  propertyId:
@@ -840,12 +1489,25 @@ roomTypeConversionDetails:
   - tenantId
  propertyId:
   - propertyId
+roomUpgradeConfig:
+ tenantId:
+  - tenantId
+rooms:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 routingRuleTemplates:
  tenantId:
   - tenantId
  propertyId:
   - propertyId
-ScheduledDepositDueSnapshot:
+routingTransferHistory:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+ruleTemplate:
  tenantId:
   - tenantId
  propertyId:
@@ -855,13 +1517,22 @@ schedules:
   - tenantId
  propertyId:
   - propertyId
-SelfCheckInCheckOutSetup:
+scmTransactions:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
-SelfCheckInCheckOutSetupImages:
+secondaryWritesStatus:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 servicePatternInternal:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+serviceRequestConfig:
  tenantId:
   - tenantId
  propertyId:
@@ -871,19 +1542,25 @@ serviceRequests:
   - tenantId
  propertyId:
   - propertyId
+settlementHistories:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+sharedDigitalKeyRecipient:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
 sharedReservations:
+ tenantId:
+  - tenantId
  propertyId:
   - propertyId
 smsSettings:
  tenantId:
   - tenantId
  propertyId:
-  - propertyId
-StaffMember:
- tenantId:
-  - tenantId
- propertyId:
-  - staffMemberPropertyAssignments
   - propertyId
 startupKey:
  tenantId:
@@ -935,244 +1612,6 @@ transactionItemMutex:
  propertyId:
   - _id
   - propertyId
-userEventStream:
- tenantId:
-  - tenantId
-vehicleDetails:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-vehicleTypes:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-verifiedIdentities:
- tenantId:
-  - tenantId
-verifiedIdentitiesEventStream:
- tenantId:
-  - tenantId
-waitlistInquiries:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-waitlistInquiryConfig:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-accountReference:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-arDefaults:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-auditEntities:
- tenantId:
-  - _id
-  - ti
- propertyId:
-  - _id
-  - pi
-autoSettlementRule:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-batchDistributorMutex:
- tenantId:
-  - _id
-  - tenantId
- propertyId:
-  - _id
-  - propertyId
-batchStatus:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-creditTerms:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-digitalCheckIn:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-FieldNameCustomization:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-fieldSettings:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-FolioCustomizationSettings:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-groupMutex:
- tenantId:
-  - _id
-  - tenantId
- propertyId:
-  - _id
-  - propertyId
-groupReportFavouritesExecution:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-guestHistoryMutex:
- tenantId:
-  - _id
-  - tenantId
- propertyId:
-  - _id
-  - propertyId
-inventoryItemMutex:
- tenantId:
-  - _id
-  - tenantId
- propertyId:
-  - _id
-  - propertyId
-multipleReservationResponseDomain:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-otaOutboundReSyncMutex:
- tenantId:
-  - _id
-  - tenantId
- propertyId:
-  - _id
-  - propertyId
-otaTransactionRevisions:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-ownerTypeCategorization:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-PlayerRetailRatingDetails:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-postingRuleStatus:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-queueRoomDashboardDomain:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-QueueRoomMutex:
- tenantId:
-  - _id
-  - tenantId
- propertyId:
-  - _id
-  - propertyId
-queueRoomPriorityLookUpDomain:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-QueueRoomPublisherMutex:
- tenantId:
-  - _id
-  - tenantId
- propertyId:
-  - _id
-  - propertyId
-queueRoomSettings:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-rateCalendar:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-rateChangeHistory:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-rateFactor:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-ratePlan:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-ratesConfig:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-rateStrategy:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-reportFavourites:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-reportFavouritesGenerationInfo:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-reportFavouritesGroup:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-reservationHousekeepingHistory:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-resourceAssignmentPlans:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
-roomUpgradeConfig:
- tenantId:
-  - tenantId
-settlementHistories:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
 transportInfo:
  tenantId:
   - tenantId
@@ -1193,7 +1632,71 @@ unappliedPaymentHistories:
   - tenantId
  propertyId:
   - propertyId
-UpdatedRoomStatusesResponse:
+universalAlertFailedEvents:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+universalAlertSetup:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+universalAlerts:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+unoccupiedAutoServiceRule:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+userCustomizableDashBoard:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+userEventStream:
+ tenantId:
+  - tenantId
+ propertyId:
+  - events
+  - roles
+  - propertyId
+userPreferredColumns:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+vehicleDetails:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+vehicleTypes:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+verifiedIdentities:
+ tenantId:
+  - tenantId
+ propertyId:
+  - verificationHistory
+  - propertyId
+verifiedIdentitiesEventStream:
+ tenantId:
+  - tenantId
+ propertyId:
+  - events
+  - propertyId
+waitlistInquiries:
+ tenantId:
+  - tenantId
+ propertyId:
+  - propertyId
+waitlistInquiryConfig:
  tenantId:
   - tenantId
  propertyId:
