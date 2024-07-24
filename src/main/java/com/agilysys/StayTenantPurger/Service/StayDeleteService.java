@@ -93,6 +93,7 @@ public class StayDeleteService {
                     int deletedCount = 0;
                     Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
                     query.limit(BATCH_SIZE);
+                    query.fields().include("_id");
                     int count =0;
                     while (isPresent) {
                         count++;
