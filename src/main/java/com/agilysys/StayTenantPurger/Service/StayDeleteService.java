@@ -166,7 +166,7 @@ public class StayDeleteService {
 
     }
 
-    public String getDocumentCountFromCacheDetails(String env) {
+    public Map<String, Long> getDocumentCountFromCacheDetails(String env) {
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
         Set<String> collections = getAllCollections(env);
         Tenant tenantTemp = null;
@@ -184,7 +184,7 @@ public class StayDeleteService {
             long count = mongoTemplate.count(query, mongoCollection.getName());
             logger.info(String.format("%s documents present in the %s collection from the cache, in the %s environment", count, mongoCollection.getName(), env));
             return count;
-        })).toString();
+        }));
 
     }
 

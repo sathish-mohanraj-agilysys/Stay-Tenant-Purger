@@ -62,7 +62,7 @@ public class Controller implements StayDeleteInterface {
     }
 
     @Override
-    public String getDocumentCountFromCache(String env) {
+    public Map<String, Long> getDocumentCountFromCache(String env) {
         return stayDeleteService.getDocumentCountFromCacheDetails(env);
     }
 
