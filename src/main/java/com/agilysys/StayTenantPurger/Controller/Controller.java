@@ -1,5 +1,6 @@
 package com.agilysys.StayTenantPurger.Controller;
 
+import com.agilysys.StayTenantPurger.Service.StaleChecker;
 import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
 import com.agilysys.StayTenantPurger.Interfaces.StayDeleteInterface;
 import com.agilysys.StayTenantPurger.Service.CoreDeleteSerive;
@@ -32,6 +33,8 @@ public class Controller implements StayDeleteInterface {
     private StayDeleteService stayDeleteService;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private StaleChecker staleChecker;
 
     public Controller() {
         createDirectoryIfNotExists(RESOURCE_PATH);
@@ -85,6 +88,11 @@ public class Controller implements StayDeleteInterface {
 
     public String backupCollection(String env) {
         return stayDeleteService.getDocumentCountFromCacheDetailsAndBackup(env);
+    }
+
+    @Override
+    public Set<String> staleChecker(String env,boolean includeAutomationTenant) {
+        return staleChecker.checkTenants(env,includeAutomationTenant);
     }
 
     private void ensureCaching(String env) {

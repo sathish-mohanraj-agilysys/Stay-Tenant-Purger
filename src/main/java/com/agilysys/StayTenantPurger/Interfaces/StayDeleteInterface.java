@@ -38,4 +38,6 @@ public interface StayDeleteInterface {
 
     @PostMapping("/backup/environment/{environment}")
     String backupCollection(@PathVariable("environment") String env);
+    @PostMapping("/staleCheck/environment/{environment}")
+    Set<String> staleChecker(@PathVariable("environment") String env,@RequestParam(value = "includeAutomationTenant",required = true) boolean includeAutomationTenant);
 }
