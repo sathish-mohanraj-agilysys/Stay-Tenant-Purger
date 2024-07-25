@@ -68,8 +68,7 @@ public class StaleChecker {
 
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-                if (isValid(tenant))
-                    staleTenants.add(tenant);
+                if (isValid(tenant)) staleTenants.add(tenant);
             }
         });
         logger.info("Stale tenants found out is" + staleTenants.toString());
@@ -82,6 +81,6 @@ public class StaleChecker {
         if (str == null) {
             return false;
         }
-        return !str.equals("default") || !str.equalsIgnoreCase("Default") || !str.equals("0");
+        return !str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0");
     }
 }
