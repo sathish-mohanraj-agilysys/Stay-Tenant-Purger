@@ -853,6 +853,8 @@ guestServiceRequestsCounter:
  propertyId:
   - propertyId
 guestStayHistory:
+ tenantId:
+  - tenantId
  propertyId:
   - pastStaysReservationIds
   - propertyId
