@@ -20,15 +20,16 @@ import java.util.Set;
 
 @Service
 public class StaleChecker {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private MongoPathFactory mongoPathFactory;
     @Autowired
     private MongoTemplateFactory mongoTemplateFactory;
+   private  Set<String> totalTenants = new HashSet<>();
+   private  Set<String> staleTenants = new HashSet<>();
 
     public Set<String> checkTenants(String env,boolean includeAutomationTenant) {
-        Set<String> totalTenants = new HashSet<>();
-        Set<String> staleTenants = new HashSet<>();
+
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
         mongoPathFactory.parallelStream().forEach(x -> {
                     try {
@@ -62,13 +63,12 @@ public class StaleChecker {
                 System.out.println("name                        ->" + jsonNode.path("name"));
 
                 if (jsonNode.path("name").asText().contains("stayTenant") && includeAutomationTenant) {
-
-                    staleTenants.add(tenant);
+                    this.addTenant(tenant);
                 }
 
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-                if (isValid(tenant)) staleTenants.add(tenant);
+                if (isValid(tenant))this.addTenant(tenant);
             }
         });
         logger.info("Stale tenants found out is" + staleTenants.toString());
@@ -82,5 +82,14 @@ public class StaleChecker {
             return false;
         }
         return !str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0");
+    }
+
+    private void addTenant(String tenant){
+       try{
+           if(Integer.parseInt(tenant)>0&&Integer.parseInt(tenant)<100000) staleTenants.add(tenant);
+       }
+       catch (Exception e){
+           logger.error("Error happened during the stale checker"+e.getMessage());
+       }
     }
 }
