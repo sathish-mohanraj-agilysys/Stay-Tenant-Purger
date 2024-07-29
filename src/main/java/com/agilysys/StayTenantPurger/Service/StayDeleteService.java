@@ -232,6 +232,28 @@ public class StayDeleteService {
         return "Successfully backed up";
 
     }
+    public Map<String, Long> checkNotwrittenInWareHouse(String env){
+        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        Set<String> collections = getAllCollections(env);
+        Tenant tenantTemp = null;
+        try {
+            tenantTemp = dataLoader.readDataFromCacheFile(env);
+        } catch (Exception e) {
+            logger.error("Cannot able to load Cache for {} environment", env);
+        }
+        if (mongoPathFactory.size() != collections.size()) {
+            logger.warn("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(), collections.size());
+        }
+        Tenant finalTenantTemp = tenantTemp;
+        return mongoPathFactory.parallelStream().collect(Collectors.toMap(CollectionPath::getName, mongoCollection -> {
+            Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
+            query.addCriteria(Criteria.where("notWrittenInWarehouse").exists(true));
+            long count = mongoTemplate.count(query, mongoCollection.getName());
+            logger.info(String.format("%s documents is not synced in the %s collection from the cache, in the %s environment", count, mongoCollection.getName(), env));
+            return count;
+        }));
+
+    }
 
     public String dropAllCollections(String env) {
         MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);

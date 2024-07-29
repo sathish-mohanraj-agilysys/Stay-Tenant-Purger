@@ -91,6 +91,11 @@ public class Controller implements StayDeleteInterface {
     }
 
     @Override
+    public Map<String, Long> checkPostgressNotSynced(String env) {
+        return stayDeleteService.checkNotwrittenInWareHouse(env);
+    }
+
+    @Override
     public Set<String> staleChecker(String env,boolean includeAutomationTenant) {
         return staleChecker.checkTenants(env,includeAutomationTenant);
     }
