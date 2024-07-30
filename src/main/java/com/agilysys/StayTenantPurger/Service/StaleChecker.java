@@ -53,7 +53,7 @@ public class StaleChecker {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
         logger.info("Total Tenants found out for the {} environment ->{}", env, totalTenants);
-        totalTenants.parallelStream().forEach(tenant -> {
+        totalTenants.stream().forEach(tenant -> {
             String url = "https://aks-core-qaint.hospitalityrevolution.com/user-service/tenant/tenants/" + tenant;
             RestTemplate restTemplate = new RestTemplate();
             try {
@@ -68,7 +68,9 @@ public class StaleChecker {
 
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-                if (isValid(tenant))this.addTenant(tenant);
+                if (isValid(tenant)){
+                    this.addTenant(tenant);
+                }
             }
         });
         logger.info("Stale tenants found out is" + staleTenants.toString());
@@ -81,12 +83,15 @@ public class StaleChecker {
         if (str == null) {
             return false;
         }
-        return !str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0");
+        boolean isvalid=!str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0");
+        return isvalid ;
     }
 
     private void addTenant(String tenant){
        try{
-           if(Integer.parseInt(tenant)>0&&Integer.parseInt(tenant)<100000) staleTenants.add(tenant);
+           if(Integer.parseInt(tenant)>0&&Integer.parseInt(tenant)<700000) {
+               staleTenants.add(tenant);
+           }
        }
        catch (Exception e){
            logger.error("Error happened during the stale checker"+e.getMessage());
