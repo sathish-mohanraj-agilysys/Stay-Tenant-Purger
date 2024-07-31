@@ -53,7 +53,7 @@ public class StaleChecker {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
         logger.info("Total Tenants found out for the {} environment ->{}", env, totalTenants);
-        totalTenants.stream().forEach(tenant -> {
+        totalTenants.parallelStream().forEach(tenant -> {
             String url = "https://aks-core-qaint.hospitalityrevolution.com/user-service/tenant/tenants/" + tenant;
             RestTemplate restTemplate = new RestTemplate();
             try {
