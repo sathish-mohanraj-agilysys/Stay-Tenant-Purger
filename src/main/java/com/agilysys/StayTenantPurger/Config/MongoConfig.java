@@ -49,6 +49,10 @@ public class MongoConfig {
     private String lab001Uri;
     @Value("${spring.data.mongodb.database001}")
     private String lab001Database;
+    @Value("${spring.data.mongodb.uritest}")
+    private String labtestUri;
+    @Value("${spring.data.mongodb.databasetest}")
+    private String labtestDatabase;
 
     @Bean(name = "qa02")
     public MongoTemplate getMongoTemplateQa02() {
@@ -90,5 +94,9 @@ public class MongoConfig {
     @Bean(name = "ui")
     public MongoTemplate getMongoTemplateLabui() {
         return new MongoTemplate(MongoClients.create(labuiUri), labuiDatabase);
+    }
+    @Bean(name = "test")
+    public MongoTemplate getMongoTemplateLabtest() {
+        return new MongoTemplate(MongoClients.create(labtestUri), labtestDatabase);
     }
 }
