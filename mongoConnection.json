@@ -1,0 +1,77 @@
+[
+  {
+    "envName": "000",
+    "url": "mongodb://lab-stay-aks-000-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "001",
+    "url": "mongodb://lab-stay-aks-001-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "002",
+    "url": "mongodb://lab-stay-aks-002-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "003",
+    "url": "mongodb://lab-stay-aks-003-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "004",
+    "url": "mongodb://lab-stay-aks-004-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "005",
+    "url": "mongodb://lab-stay-aks-005-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "006",
+    "url": "mongodb://lab-stay-aks-006-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "007",
+    "url": "mongodb://lab-stay-aks-007-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "008",
+    "url": "mongodb://lab-stay-aks-008-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "009",
+    "url": "mongodb://lab-stay-aks-009-server.westus.cloudapp.azure.com:27017/rGuestStay",
+    "dbName": "rGuestStay"
+  },
+  {
+    "envName": "qa",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qa-01.rj1hi.mongodb.net/rGuestStay-aks-stay-qa",
+    "dbName": "rGuestStay-aks-stay-qa"
+  },
+  {
+    "envName": "qa02",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qa-02.rj1hi.mongodb.net/rGuestStay-aks-stay-qa-02",
+    "dbName": "rGuestStay-aks-stay-qa-02"
+  },
+  {
+    "envName": "qa03",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qa-03.rj1hi.mongodb.net/rGuestStay-aks-stay-qa-03",
+    "dbName": "rGuestStay-aks-stay-qa-03"
+  },
+  {
+    "envName": "qaint",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qaint-01.rj1hi.mongodb.net/rGuestStay-aks-stay-qaint",
+    "dbName": "rGuestStay-aks-stay-qaint"
+  },
+  {
+    "envName": "release",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-release-01.rj1hi.mongodb.net/rGuestStay-aks-stay-release",
+    "dbName": "rGuestStay-aks-stay-release"
+  }
+]
