@@ -3,7 +3,6 @@ package com.agilysys.StayTenantPurger.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static com.agilysys.StayTenantPurger.Config.PostgresFactory.getJdbcTemplate;
 
 @Service
 public class PostgressDeleteService {
@@ -104,45 +105,5 @@ public class PostgressDeleteService {
         return count != null && count > 0;
     }
 
-    private synchronized JdbcTemplate getJdbcTemplate(String env) {
-        String port = "";
-        switch (env) {
-            case "000":
-                port = String.valueOf(36000);
-                break;
-            case "001":
-                port = String.valueOf(36001);
-                break;
-            case "002":
-                port = String.valueOf(36002);
-                break;
-            case "003":
-                port = String.valueOf(36003);
-                break;
-            case "004":
-                port = String.valueOf(36004);
-                break;
-            case "005":
-                port = String.valueOf(36005);
-                break;
-            case "006":
-                port = String.valueOf(36006);
-                break;
-            case "007":
-                port = String.valueOf(36007);
-                break;
-            case "008":
-                port = String.valueOf(36008);
-                break;
-            case "009":
-                port = String.valueOf(36009);
-                break;
-        }
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl("jdbc:postgresql://localhost:" + port + "/k3d_localhost");
-        dataSource.setUsername("postgres");
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        return new JdbcTemplate(dataSource);
-    }
 
 }
