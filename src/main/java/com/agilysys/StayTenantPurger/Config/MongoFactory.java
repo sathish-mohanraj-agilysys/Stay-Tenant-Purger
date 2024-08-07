@@ -26,7 +26,7 @@ public class MongoFactory {
         }
     }
 
-    public static synchronized MongoTemplate getTemplate(String env) {
+    public  synchronized MongoTemplate getTemplate(String env) {
         for (MongoConnection connection : MONGO_CONNECTIONS) {
             if (connection.getEnvName().contains(env)) {
                 MongoClient mongoClient = MongoClients.create(connection.getUrl());

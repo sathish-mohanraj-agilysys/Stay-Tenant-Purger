@@ -1,6 +1,7 @@
 package com.agilysys.StayTenantPurger.Service;
 
 import com.agilysys.StayTenantPurger.Config.DataLoader;
+import com.agilysys.StayTenantPurger.Config.MongoFactory;
 import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
 import com.agilysys.StayTenantPurger.modal.DAO.CollectionPath;
@@ -50,7 +51,7 @@ public class StayDeleteService {
     private final Path CLONING_PATH = Paths.get(System.getProperty("user.dir"), "Cloned");
     private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
     @Autowired
-    private MongoTemplateFactory mongoTemplateFactory;
+    MongoFactory mongoFactory;
     @Autowired
     private CoreDeleteSerive coreDeleteSerive;
     @Autowired
@@ -73,7 +74,7 @@ public class StayDeleteService {
     public ResponseEntity<String> deleteInMongodb(String env, boolean isToDeleteCore) {
         Set<String> collections = getAllCollections(env);
         Map<String, Integer> deletedOut;
-        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        MongoTemplate mongoTemplate =mongoFactory.getTemplate(env);
         Tenant tenantToDelete;
 
         try {
@@ -167,7 +168,7 @@ public class StayDeleteService {
     }
 
     public Map<String, Long> getDocumentCountFromCacheDetails(String env) {
-        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        MongoTemplate mongoTemplate =mongoFactory.getTemplate(env);
         Set<String> collections = getAllCollections(env);
         Tenant tenantTemp = null;
         try {
@@ -194,7 +195,7 @@ public class StayDeleteService {
         } catch (IOException e) {
             logger.error(e.toString());
         }
-        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        MongoTemplate mongoTemplate =mongoFactory.getTemplate(env);
 
         Tenant tenantTemp = null;
         try {
@@ -233,7 +234,7 @@ public class StayDeleteService {
 
     }
     public Map<String, Long> checkNotwrittenInWareHouse(String env){
-        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        MongoTemplate mongoTemplate =mongoFactory.getTemplate(env);
         Set<String> collections = getAllCollections(env);
         Tenant tenantTemp = null;
         try {
@@ -256,7 +257,7 @@ public class StayDeleteService {
     }
 
     public String dropAllCollections(String env) {
-        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        MongoTemplate mongoTemplate =mongoFactory.getTemplate(env);
         mongoTemplate.getCollectionNames().parallelStream().forEach(collection->{
             mongoTemplate.dropCollection(collection);
             logger.info(String.format("Dropped the %s collection", collection));
@@ -276,13 +277,13 @@ public class StayDeleteService {
     }
 
     public Set<String> getAllCollections(String env) {
-        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        MongoTemplate mongoTemplate =mongoFactory.getTemplate(env);
         logger.info("All collections information has been retrieved for the {} environment", env);
         return mongoTemplate.getCollectionNames();
     }
 
     public Map<String, Integer> getDocumentCount(String env, WebSocketSession session) {
-        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        MongoTemplate mongoTemplate =mongoFactory.getTemplate(env);
         return mongoTemplate.getCollectionNames().parallelStream()
                 .collect(Collectors.toMap(
                         collectionName -> collectionName,
