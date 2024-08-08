@@ -1,5 +1,6 @@
 package com.agilysys.StayTenantPurger.Service;
 
+import com.agilysys.StayTenantPurger.Config.MongoFactory;
 import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,13 +25,13 @@ public class StaleChecker {
     @Autowired
     private MongoPathFactory mongoPathFactory;
     @Autowired
-    private MongoTemplateFactory mongoTemplateFactory;
+    private MongoFactory mongoFactory;
    private  Set<String> totalTenants = new HashSet<>();
    private  Set<String> staleTenants = new HashSet<>();
 
     public Set<String> checkTenants(String env,boolean includeAutomationTenant) {
 
-        MongoTemplate mongoTemplate = mongoTemplateFactory.getTemplate(env);
+        MongoTemplate mongoTemplate = mongoFactory.getTemplate(env);
         mongoPathFactory.parallelStream().forEach(x -> {
                     try {
                         if (x.getTenantPath() != null || (x.getTenantPath() == ""))
