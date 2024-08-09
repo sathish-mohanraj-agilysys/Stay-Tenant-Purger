@@ -14,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+import static com.agilysys.StayTenantPurger.Util.Base64Generator.generateBasicAuth;
+
 @Service
 public class ElasticDeleteService {
     private static final Logger logger = LoggerFactory.getLogger(ElasticDeleteService.class);
@@ -21,7 +23,7 @@ public class ElasticDeleteService {
     private RestTemplate restTemplate = new RestTemplate();
 
     public boolean startDeletingTenants(String env, List<String> tenants) {
-        List<String> totalIndexes = getIndexes(env).stream().map(IndexInfo::getIndex).toList();
+        List<String> totalIndexes = getIndexes(env).stream().filter(x->x.getIndex().contains("aks-stay-"+env+"_")).map(IndexInfo::getIndex).toList();
         for (String tenant : tenants) {
             for (String index : totalIndexes) {
                 deleteTenant(env, index, tenant);
@@ -32,9 +34,7 @@ public class ElasticDeleteService {
 
     public List<IndexInfo> getIndexes(String env) {
         String url = getUrl(env) + "/_cat/indices?format=json&bytes=b&s=store.size:desc,index:asc";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/json");
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        HttpEntity<String> entity = new HttpEntity<>(getHeader(env));
         // Use ParameterizedTypeReference to handle the generic type
         ResponseEntity<List<IndexInfo>> response = restTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<IndexInfo>>() {
         });
@@ -49,9 +49,7 @@ public class ElasticDeleteService {
 
     public String deleteTenant(String env, String indexes, String tenantId) {
         String url = getUrl(env) + "/" + indexes + "/_delete_by_query";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/json");
-        HttpEntity<DeleteQuery> entity = new HttpEntity<>(getQuery(tenantId), headers);
+        HttpEntity<DeleteQuery> entity = new HttpEntity<>(getQuery(tenantId), getHeader(env));
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
         logger.info(response.getBody());
         return response.getBody().toString();
@@ -75,8 +73,22 @@ public class ElasticDeleteService {
                 return "http://lab-stay-aks-006-server.westus.cloudapp.azure.com:9200";
             case "007":
                 return "http://lab-stay-aks-007-server.westus.cloudapp.azure.com:9200";
+            case "qaint":
+            case "qa":
+                return "https://78487f86271b4a9b90ba28a848826f45.westus2.azure.elastic-cloud.com";
             default:
                 return "";
+        }
+    }
+    public HttpHeaders getHeader(String env) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "application/json");
+        switch (env) {
+            case "qaint":
+                headers.set("Authorization",generateBasicAuth("stay-services","flu1skew*dorn2KROX"));
+                return headers;
+            default:
+                return headers;
         }
     }
 

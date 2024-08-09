@@ -37,6 +37,13 @@ public class PostgresFactory {
             case "009":
                 port = String.valueOf(36009);
                 break;
+            case "qaint":
+                DriverManagerDataSource dataSource = new DriverManagerDataSource();
+                dataSource.setUrl("jdbc:postgresql://stay-postgresql-qa.postgres.database.azure.com:5432/aks_stay_qaint");
+                dataSource.setUsername("agilysys@stay-postgresql-qa");
+                dataSource.setPassword("MhcPykDwpHx2lSIC");
+                dataSource.setDriverClassName("org.postgresql.Driver");
+                return new JdbcTemplate(dataSource);
         }
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setUrl("jdbc:postgresql://localhost:" + port + "/k3d_localhost");
