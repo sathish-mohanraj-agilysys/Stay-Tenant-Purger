@@ -1,5 +1,6 @@
 package com.agilysys.StayTenantPurger.Service;
 
+import com.agilysys.StayTenantPurger.Util.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +21,8 @@ public class PostgressDeleteService {
     private static final Logger logger = LoggerFactory.getLogger(PostgressDeleteService.class);
 
     public List<String> checkForTenantId(String env) {
+        logger.info("[{}] Tenant column in all Postgress table", Status.CHECKING);
+
         return checkTablesForTenantId(getJdbcTemplate(env));
     }
 
@@ -90,9 +93,9 @@ public class PostgressDeleteService {
 
         // Print results
         if (tablesWithoutTenantId.isEmpty()) {
-            System.out.println("All tables contain the tenant_id column.");
+            logger.info("[{}] None of Table has TenantId", Status.RESULT);
         } else {
-            System.out.println("The following tables do not contain the tenant_id column:");
+            logger.info("[{}] Following Table has tenantId", Status.RESULT);
             tablesWithoutTenantId.forEach(System.out::println);
         }
         return tablesWithoutTenantId;
