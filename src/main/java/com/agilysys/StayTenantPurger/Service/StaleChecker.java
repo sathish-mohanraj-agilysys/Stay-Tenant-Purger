@@ -3,6 +3,7 @@ package com.agilysys.StayTenantPurger.Service;
 import com.agilysys.StayTenantPurger.Config.MongoFactory;
 import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
+import com.agilysys.StayTenantPurger.Util.Status;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ import java.util.Set;
 
 @Service
 public class StaleChecker {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(StaleChecker.class);
     @Autowired
     private MongoPathFactory mongoPathFactory;
     @Autowired
@@ -61,8 +62,7 @@ public class StaleChecker {
                 ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
-                System.out.println("name                        ->" + jsonNode.path("name"));
-
+                logger.info("[{}] -> TenantId:{}; TenantName:{}", Status.RESULT,tenant, jsonNode.path("name"));
                 if (jsonNode.path("name").asText().contains("stayTenant") && includeAutomationTenant) {
                     this.addTenant(tenant);
                 }
@@ -85,6 +85,9 @@ public class StaleChecker {
             return false;
         }
         boolean isvalid=!str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0");
+        if(!isvalid){
+            logger.info("[{}] Skipping the tenant: {}",Status.FAILED,str);
+        }
         return isvalid ;
     }
 
