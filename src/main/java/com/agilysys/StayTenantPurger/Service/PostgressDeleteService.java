@@ -21,7 +21,7 @@ public class PostgressDeleteService {
     private static final Logger logger = LoggerFactory.getLogger(PostgressDeleteService.class);
 
     public List<String> checkForTenantId(String env) {
-        logger.info("[{}] Tenant column in all Postgress table", Status.CHECKING);
+        logger.info("[{}-{}] Tenant column in all Postgress table", Status.CHECKING,env);
 
         return checkTablesForTenantId(getJdbcTemplate(env));
     }
@@ -109,4 +109,17 @@ public class PostgressDeleteService {
     }
 
 
+    public Map<String, String> getTotalRowCountInDb(String env) {
+        logger.info("[{}-{}] Total row count in all tables",Status.CHECKING,env);
+        List<String> tableNames = checkForTenantId(env);
+        Map<String, String> rowCountMap = new ConcurrentHashMap<>();
+      tableNames.parallelStream().forEach(tableName->{
+          String countQuery = "SELECT COUNT(*) FROM " + tableName;
+          Long rowCount = getJdbcTemplate(env).queryForObject(countQuery, Long.class);
+          rowCountMap.put(tableName, String.valueOf(rowCount));
+      });
+        logger.info("[{}-{}] Total row count in all tables",Status.COMPLETED,env);
+
+        return rowCountMap;
+    }
 }

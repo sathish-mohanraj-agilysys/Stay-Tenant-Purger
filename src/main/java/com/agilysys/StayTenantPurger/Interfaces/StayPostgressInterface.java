@@ -13,6 +13,9 @@ public interface StayPostgressInterface {
     @PostMapping("/postgres/environment/{environment}")
     List<String> checkTenantIdColumn(@PathVariable("environment") String env);
 
+    @GetMapping("/postgres/totalCount/environment/{environment}")
+    Map<String, String> getTotalCount(@PathVariable("environment") String env);
+
     @PostMapping("/postgres/totalCount/environment/{environment}")
     Map<String, Integer> checkTotalRowCount(@PathVariable("environment") String env, @RequestBody List<String> tenantIds);
 

@@ -19,6 +19,12 @@ public class PostgresController implements StayPostgressInterface {
     }
 
     @Override
+    public Map<String, String> getTotalCount(String env) {
+        return postgressDeleteService.getTotalRowCountInDb(env);
+    }
+
+
+    @Override
     public Map<String, Integer> checkTotalRowCount(String env, List<String> tenantIds) {
         return postgressDeleteService.countDocuments(env,tenantIds);
     }
