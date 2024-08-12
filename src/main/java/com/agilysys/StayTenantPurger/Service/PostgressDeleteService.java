@@ -74,7 +74,7 @@ public class PostgressDeleteService {
             int deletedCount = jdbcTemplate.update(sql);
             tableCount.put(tableName, deletedCount);
             remainingTask.remove(tableName);
-            logger.info("[{}-TOTAL_COUNT_CHECK]{}", Status.REMAINING, remainingTask.toString());
+            logger.info("[{}-DELETE_TABLE]{}", Status.REMAINING, remainingTask.toString());
             logger.info("Deleted " + deletedCount + " rows from table " + tableName);
         });
         return tableCount;
