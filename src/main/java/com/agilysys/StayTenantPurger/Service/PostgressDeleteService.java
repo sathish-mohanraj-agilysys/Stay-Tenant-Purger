@@ -27,12 +27,10 @@ public class PostgressDeleteService {
     }
 
     public Map<String, Integer> countDocuments(String env, List<String> tenantIds) {
+        if (tenantIds.isEmpty())throw new RuntimeException("Cannot proceed Checking because request body is null");
         List<String> tableNames = checkForTenantId(env);
         Set<String> remainingTask = new ConcurrentSkipListSet<>(tableNames);
         logger.info("{} Tables found in the {} environment", tableNames.size(), env);
-        if (tenantIds.isEmpty()) {
-            return null;
-        }
         // Convert tenantIds to a comma-separated string
         String tenantIdList = tenantIds.stream()
                 .map(id -> "'" + id + "'")
@@ -49,7 +47,7 @@ public class PostgressDeleteService {
             tableCount.put(tableName, count);
             remainingTask.remove(tableName);
             System.out.println("Found " + count + " rows in table " + tableName);
-            logger.info(remainingTask.toString());
+            logger.info("[{}-TENANT_COUNT_CHECK]{}", Status.REMAINING, remainingTask.toString());
         });
 
         return tableCount;
@@ -112,11 +110,14 @@ public class PostgressDeleteService {
     public Map<String, String> getTotalRowCountInDb(String env) {
         logger.info("[{}-{}] Total row count in all tables",Status.CHECKING,env);
         List<String> tableNames = checkForTenantId(env);
+        Set<String> remainingTask=new ConcurrentSkipListSet<>(tableNames);
         Map<String, String> rowCountMap = new ConcurrentHashMap<>();
       tableNames.parallelStream().forEach(tableName->{
           String countQuery = "SELECT COUNT(*) FROM " + tableName;
           Long rowCount = getJdbcTemplate(env).queryForObject(countQuery, Long.class);
           rowCountMap.put(tableName, String.valueOf(rowCount));
+          remainingTask.remove(tableName);
+          logger.info("[{}-TOTAL_COUNT_CHECK]{}", Status.REMAINING, remainingTask.toString());
       });
         logger.info("[{}-{}] Total row count in all tables",Status.COMPLETED,env);
 
