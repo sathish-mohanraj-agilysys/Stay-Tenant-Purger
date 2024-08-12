@@ -65,7 +65,7 @@ public class PostgressDeleteService {
         String tenantIdList = tenantIds.parallelStream()
                 .map(id -> "'" + id + "'")
                 .collect(Collectors.joining(","));
-
+        Set<String> remainingTask=new ConcurrentSkipListSet<>(tableNames);
         Map<String, Integer> tableCount = new ConcurrentHashMap<>();
         tableNames.parallelStream().forEach(tableName -> {
             logger.info("Deleting on the table " + tableName);
@@ -73,6 +73,8 @@ public class PostgressDeleteService {
             String sql = "DELETE FROM " + tableName + " WHERE tenant_id IN (" + tenantIdList + ")";
             int deletedCount = jdbcTemplate.update(sql);
             tableCount.put(tableName, deletedCount);
+            remainingTask.remove(tableName);
+            logger.info("[{}-TOTAL_COUNT_CHECK]{}", Status.REMAINING, remainingTask.toString());
             logger.info("Deleted " + deletedCount + " rows from table " + tableName);
         });
         return tableCount;

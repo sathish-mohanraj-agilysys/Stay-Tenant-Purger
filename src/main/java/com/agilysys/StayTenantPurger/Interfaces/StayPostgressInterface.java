@@ -1,5 +1,6 @@
 package com.agilysys.StayTenantPurger.Interfaces;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,6 @@ public interface StayPostgressInterface {
     @PostMapping("/postgres/totalCount/environment/{environment}")
     Map<String, Integer> checkTotalRowCount(@PathVariable("environment") String env, @RequestBody List<String> tenantIds);
 
-    @PostMapping("/postgres/delete/environment/{environment}")
+    @DeleteMapping("/postgres/delete/environment/{environment}")
     Map<String, Integer> deleteTenant(@PathVariable("environment") String env, @RequestBody List<String> tenantIds);
 }
