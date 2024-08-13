@@ -4,7 +4,7 @@ import com.agilysys.StayTenantPurger.Service.StaleChecker;
 import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
 import com.agilysys.StayTenantPurger.Interfaces.StayDeleteInterface;
 import com.agilysys.StayTenantPurger.Service.CoreDeleteSerive;
-import com.agilysys.StayTenantPurger.Service.StayDeleteService;
+import com.agilysys.StayTenantPurger.Service.StayMongoDeleteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,76 +23,76 @@ import java.util.Map;
 import java.util.Set;
 
 @RestController
-public class Controller implements StayDeleteInterface {
+public class MongoController implements StayDeleteInterface {
     public Path RESOURCE_PATH = Paths.get(System.getProperty("user.dir"), "src", "main", "resources");
     public Path BACKUP_PATH = RESOURCE_PATH.resolve("Backup");
 
     @Autowired
     private CoreDeleteSerive coreDeleteSerive;
     @Autowired
-    private StayDeleteService stayDeleteService;
+    private StayMongoDeleteService stayMongoDeleteService;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private StaleChecker staleChecker;
 
-    public Controller() {
+    public MongoController() {
         createDirectoryIfNotExists(RESOURCE_PATH);
         createDirectoryIfNotExists(BACKUP_PATH);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
+    private static final Logger logger = LoggerFactory.getLogger(MongoController.class);
 
 
     public String addTenantInCache(@RequestBody Tenant tenant, @PathVariable("environment") String env) {
         ensureCaching(env);
-        return stayDeleteService.storeData(tenant, env);
+        return stayMongoDeleteService.storeData(tenant, env);
     }
 
     public ResponseEntity startDeleting(@PathVariable("environment") String env, boolean isToDeleteCore) {
         ensureCaching(env);
-        return stayDeleteService.deleteInMongodb(env, isToDeleteCore);
+        return stayMongoDeleteService.deleteInMongodb(env, isToDeleteCore);
     }
 
     public String clearDataInLocal(@PathVariable("environment") String env) {
         ensureCaching(env);
-        return stayDeleteService.clearInLocal(env);
+        return stayMongoDeleteService.clearInLocal(env);
     }
 
     public String getDataFromCache(@PathVariable("environment") String env) {
         ensureCaching(env);
-        return stayDeleteService.getDataFromCache(env);
+        return stayMongoDeleteService.getDataFromCache(env);
     }
 
     @Override
     public Map<String, Long> getDocumentCountFromCache(String env) {
-        return stayDeleteService.getDocumentCountFromCacheDetails(env);
+        return stayMongoDeleteService.getDocumentCountFromCacheDetails(env);
     }
 
     public String dropCollections(@PathVariable("environment") String env) {
         ensureCaching(env);
-        return stayDeleteService.dropAllCollections(env);
+        return stayMongoDeleteService.dropAllCollections(env);
     }
 
     public Set<String> getAllCollections(String env) {
         ensureCaching(env);
-        return stayDeleteService.getAllCollections(env);
+        return stayMongoDeleteService.getAllCollections(env);
     }
 
 
     public Map<String, Integer> getDocumentCount(String env) {
         ensureCaching(env);
-        return stayDeleteService.getDocumentCount(env,null);
+        return stayMongoDeleteService.getDocumentCount(env,null);
     }
 
 
     public String backupCollection(String env) {
-        return stayDeleteService.getDocumentCountFromCacheDetailsAndBackup(env);
+        return stayMongoDeleteService.getDocumentCountFromCacheDetailsAndBackup(env);
     }
 
     @Override
     public Map<String, Long> checkPostgressNotSynced(String env) {
-        return stayDeleteService.checkNotwrittenInWareHouse(env);
+        return stayMongoDeleteService.checkNotwrittenInWareHouse(env);
     }
 
     @Override

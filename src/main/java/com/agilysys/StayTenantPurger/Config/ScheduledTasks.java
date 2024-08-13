@@ -1,6 +1,6 @@
 package com.agilysys.StayTenantPurger.Config;
 
-import com.agilysys.StayTenantPurger.Service.StayDeleteService;
+import com.agilysys.StayTenantPurger.Service.StayMongoDeleteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 @Component
 public class ScheduledTasks {
     @Autowired
-    private StayDeleteService stayDeleteService;
+    private StayMongoDeleteService stayMongoDeleteService;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private String[] env = new String[]{"000", "005"};
 
@@ -20,7 +20,7 @@ public class ScheduledTasks {
     public void weeklyTaskinitiated() {
         logger.info("Daily Task initiated");
         Arrays.stream(env).forEach(x -> {
-            stayDeleteService.deleteInMongodb(x, true);
+            stayMongoDeleteService.deleteInMongodb(x, true);
             logger.info("The {} environment cleaned up",x);
         });
     }

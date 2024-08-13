@@ -1,6 +1,6 @@
 package com.agilysys.StayTenantPurger.Config;
 
-import com.agilysys.StayTenantPurger.Service.StayDeleteService;
+import com.agilysys.StayTenantPurger.Service.StayMongoDeleteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
@@ -14,7 +14,7 @@ import java.util.Set;
 @Component
 public class MyWebSocketHandler extends TextWebSocketHandler {
     @Autowired
-    private StayDeleteService stayDeleteService;
+    private StayMongoDeleteService stayMongoDeleteService;
     private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
     @Override
@@ -27,7 +27,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         System.out.println("Received: " + message.getPayload());;
-        stayDeleteService.getDocumentCount(message.getPayload(), session);
+        stayMongoDeleteService.getDocumentCount(message.getPayload(), session);
 
     }
 

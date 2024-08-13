@@ -2,7 +2,6 @@ package com.agilysys.StayTenantPurger.Service;
 
 import com.agilysys.StayTenantPurger.Config.DataLoader;
 import com.agilysys.StayTenantPurger.Config.MongoFactory;
-import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
 import com.agilysys.StayTenantPurger.modal.DAO.CollectionPath;
 import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
@@ -46,10 +45,10 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
-public class StayDeleteService {
+public class StayMongoDeleteService {
     private final int BATCH_SIZE = 30000;
     private final Path CLONING_PATH = Paths.get(System.getProperty("user.dir"), "Cloned");
-    private static final Logger logger = LoggerFactory.getLogger(StayDeleteService.class);
+    private static final Logger logger = LoggerFactory.getLogger(StayMongoDeleteService.class);
     @Autowired
     MongoFactory mongoFactory;
     @Autowired
