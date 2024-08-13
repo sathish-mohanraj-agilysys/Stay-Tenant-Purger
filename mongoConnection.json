@@ -78,5 +78,10 @@
     "envName": "ui",
     "url": "mongodb://lab-stay-aks-ui-01.westus.cloudapp.azure.com/rGuestStay",
     "dbName": "rGuestStay"
+  },
+  {
+    "envName": "test",
+    "url": "mongodb://localhost:37017/rGuestStay",
+    "dbName": "rGuestStay"
   }
 ]
