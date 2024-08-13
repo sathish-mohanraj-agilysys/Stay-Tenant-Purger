@@ -6,10 +6,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EsInterface {
     @GetMapping("/getIndexes/env/{environment}")
     public Object getIndexes(@PathVariable("environment") String env);
+
     @PostMapping("/deleteTenant/env/{environment}")
-    public Object deleteTenant(@PathVariable("environment") String env, @RequestBody List<String> tenants);
+    public Map<String, String> deleteTenant(@PathVariable("environment") String env, @RequestBody List<String> tenants);
 }

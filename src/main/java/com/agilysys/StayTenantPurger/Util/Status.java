@@ -7,5 +7,6 @@ public enum Status {
     COMPLETED,
     CHECKING,
     RESULT,
+    FOUND,
     RECEIVED;
 }

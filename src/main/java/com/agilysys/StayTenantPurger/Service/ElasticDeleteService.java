@@ -1,6 +1,8 @@
 package com.agilysys.StayTenantPurger.Service;
 
+import com.agilysys.StayTenantPurger.Util.Status;
 import com.agilysys.StayTenantPurger.modal.DAO.DeleteQuery;
+import com.agilysys.StayTenantPurger.modal.DAO.ElasticsearchResponse;
 import com.agilysys.StayTenantPurger.modal.DAO.IndexInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.agilysys.StayTenantPurger.Util.Base64Generator.generateBasicAuth;
 
@@ -22,14 +30,20 @@ public class ElasticDeleteService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public boolean startDeletingTenants(String env, List<String> tenants) {
-        List<String> totalIndexes = getIndexes(env).stream().filter(x->x.getIndex().contains("aks-stay-"+env+"_")).map(IndexInfo::getIndex).toList();
+    public Map<String, String> startDeletingTenants(String env, List<String> tenants) {
+        logger.info("[{}] Deleting the {} tenants in the Elastic Search", Status.STARTED, tenants);
+        List<String> totalIndexes = getIndexes(env).stream().map(IndexInfo::getIndex).toList();
+            if(Stream.of("001", "002", "003", "004", "005", "006", "007", "008", "009", "ui").noneMatch((x -> x.equalsIgnoreCase(env)))){
+                totalIndexes =  totalIndexes.stream().filter(x->x.contains("aks-stay-" + env + "_")).toList();
+            }
+        logger.info("[{}]  Deleting {} indexes in the Elastic Search", Status.FOUND, totalIndexes.toString());
+        Map<String, String> documentDeleted = new ConcurrentHashMap<>();
         for (String tenant : tenants) {
             for (String index : totalIndexes) {
-                deleteTenant(env, index, tenant);
+                documentDeleted.put(index, String.valueOf(deleteTenant(env, index, tenant)));
             }
         }
-        return true;
+        return documentDeleted;
     }
 
     public List<IndexInfo> getIndexes(String env) {
@@ -47,12 +61,12 @@ public class ElasticDeleteService {
         return restTemplate.postForObject(url, null, String.class);
     }
 
-    public String deleteTenant(String env, String indexes, String tenantId) {
+    public int deleteTenant(String env, String indexes, String tenantId) {
         String url = getUrl(env) + "/" + indexes + "/_delete_by_query";
         HttpEntity<DeleteQuery> entity = new HttpEntity<>(getQuery(tenantId), getHeader(env));
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-        logger.info(response.getBody());
-        return response.getBody().toString();
+        ResponseEntity<ElasticsearchResponse> response = restTemplate.exchange(url, HttpMethod.POST, entity, ElasticsearchResponse.class);
+        logger.info("[{}] ES deleted count for tenant {} and indexes {} is {}", Status.COMPLETED, tenantId, indexes, Objects.requireNonNull(response.getBody()).getDeleted());
+        return response.getBody().getDeleted();
     }
 
     public String getUrl(String env) {
@@ -80,12 +94,13 @@ public class ElasticDeleteService {
                 return "";
         }
     }
+
     public HttpHeaders getHeader(String env) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         switch (env) {
             case "qaint":
-                headers.set("Authorization",generateBasicAuth("stay-services","flu1skew*dorn2KROX"));
+                headers.set("Authorization", generateBasicAuth("stay-services", "flu1skew*dorn2KROX"));
                 return headers;
             default:
                 return headers;

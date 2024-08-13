@@ -70,7 +70,7 @@ public class StayMongoDeleteService {
         }
     }
 
-    public ResponseEntity<String> deleteInMongodb(String env, boolean isToDeleteCore) {
+    public ResponseEntity<Map<String, Integer>> deleteInMongodb(String env, boolean isToDeleteCore) {
         Set<String> collections = getAllCollections(env);
         Map<String, Integer> deletedOut;
         MongoTemplate mongoTemplate =mongoFactory.getTemplate(env);
@@ -134,9 +134,9 @@ public class StayMongoDeleteService {
             executorService.shutdown();
 
         } catch (FileNotFoundException e) {
-            return new ResponseEntity<>("Cannot not open the file", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
         } catch (IOException e) {
-            return new ResponseEntity<>("Cannot able to get the cache data", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
         }
 
         try {
@@ -151,8 +151,7 @@ public class StayMongoDeleteService {
             logger.error("Error in backup for {} environment", env);
         }
 
-        return new ResponseEntity<>(String.format("The process succeeded but collection size mismatch found! %d collections found in configuration file and %d collections found in the %s MongoDB.\nDeleted documents: %s",
-                mongoPathFactory.size(), collections.size(), env, deletedOut), HttpStatus.OK);
+        return new ResponseEntity<>( deletedOut, HttpStatus.OK);
     }
 
     public String clearInLocal(String env) {
