@@ -14,12 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.agilysys.StayTenantPurger.Util.Base64Generator.generateBasicAuth;
@@ -33,16 +31,19 @@ public class ElasticDeleteService {
     public Map<String, String> startDeletingTenants(String env, List<String> tenants) {
         logger.info("[{}] Deleting the {} tenants in the Elastic Search", Status.STARTED, tenants);
         List<String> totalIndexes = getIndexes(env).stream().map(IndexInfo::getIndex).toList();
-            if(Stream.of("001", "002", "003", "004", "005", "006", "007", "008", "009", "ui").noneMatch((x -> x.equalsIgnoreCase(env)))){
-                totalIndexes =  totalIndexes.stream().filter(x->x.contains("aks-stay-" + env + "_")).toList();
-            }
+        if (Stream.of("001", "002", "003", "004", "005", "006", "007", "008", "009", "ui").noneMatch((x -> x.equalsIgnoreCase(env)))) {
+            totalIndexes = totalIndexes.stream().filter(x -> x.contains("aks-stay-" + env + "_")).toList();
+        }
         logger.info("[{}]  Deleting {} indexes in the Elastic Search", Status.FOUND, totalIndexes.toString());
         Map<String, String> documentDeleted = new ConcurrentHashMap<>();
-        for (String tenant : tenants) {
-            for (String index : totalIndexes) {
-                documentDeleted.put(index, String.valueOf(deleteTenant(env, index, tenant)));
-            }
-        }
+        List<String> finalTotalIndexes = totalIndexes;
+        tenants.parallelStream().forEach(tenant -> {
+            finalTotalIndexes.parallelStream().forEach(index -> {
+                String esDeletedCount = String.valueOf(deleteTenant(env, index, tenant));
+                documentDeleted.put(index, esDeletedCount);
+                logger.debug("[{}] Deleting tenant from the ES for index {} is of count {}", tenant, index, esDeletedCount);
+            });
+        });
         return documentDeleted;
     }
 
