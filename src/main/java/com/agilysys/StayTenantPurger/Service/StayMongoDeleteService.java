@@ -89,32 +89,24 @@ public class StayMongoDeleteService {
 
             mongoPathFactory.forEach(mongoCollection -> {
                 Callable<Integer> task = () -> {
-                    boolean isPresent = true;
                     int deletedCount = 0;
                     Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
                     query.limit(BATCH_SIZE);
-                    query.fields().include("_id");
                     int count =0;
-                    while (isPresent) {
+                    DeleteResult deleteResult;
+                    do{
                         count++;
-                        logger.info("Going to start {} batch querying in  {} collection" ,count,mongoCollection.getName());
-                        List<Document> documents = mongoTemplate.find(query, Document.class, mongoCollection.getName());
-                        logger.info("Got the output {} batch in  {} collection" ,count,mongoCollection.getName());
-                        if (!documents.isEmpty()) {
-                            Criteria batchCriteria = Criteria.where("_id").in(documents.stream().map(x -> x.get("_id")).collect(Collectors.toSet()));
                             logger.info("Going to start {} batch deleting in {} collection" ,count,mongoCollection.getName());
-                            DeleteResult deleteResult = mongoTemplate.remove(new Query(batchCriteria), Object.class, mongoCollection.getName());
-                            logger.info("Deleting completed for {} batch  in {} collection" ,count,mongoCollection.getName());
+                             deleteResult = mongoTemplate.remove(query, Object.class, mongoCollection.getName());
+                            logger.info("Deleted {} documents  in {} batch  in {} collection" ,deleteResult.getDeletedCount(),count,mongoCollection.getName());
                             deletedCount += (int) deleteResult.getDeletedCount();
-                        } else {
-                            isPresent = false;
-                        }
-                    }
+                    } while (deleteResult.getDeletedCount()==BATCH_SIZE);
+
                     taskRemaining.remove(mongoCollection.getName());
                     if (deletedCount == 0) {
                         logger.info("No documents found for the {}", mongoCollection.getName());
                     } else {
-                        logger.info("The {} documents deleted in the {} collection", deletedCount, mongoCollection.getName());
+                        logger.info("Total {} documents deleted in the {} collection", deletedCount, mongoCollection.getName());
                     }
                     logger.info("Remaining collections are {}", taskRemaining);
                     return deletedCount;
