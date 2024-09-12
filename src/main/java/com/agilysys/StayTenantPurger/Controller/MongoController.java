@@ -45,6 +45,12 @@ public class MongoController implements StayDeleteInterface {
 
 
     public String addTenantInCache(@RequestBody Tenant tenant, @PathVariable("environment") String env) {
+        Set<String> ignorable = Set.of("default", "Default", "0", "null");
+        for (String str : tenant.getTenant()) {
+            if (ignorable.contains(str)) {
+                return "Cannot add invalid TenantIds of in" + ignorable.toString();
+            }
+        }
         ensureCaching(env);
         return stayMongoDeleteService.storeData(tenant, env);
     }

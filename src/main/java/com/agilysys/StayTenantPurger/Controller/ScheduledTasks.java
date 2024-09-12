@@ -24,7 +24,6 @@ public class ScheduledTasks {
     @PostConstruct
     private void init() {
         logger.info("[{]] Automation environment cleanup");
-        weeklyTaskinitiated();
     }
 
     @Scheduled(cron = "0 */5 * * * ?")
