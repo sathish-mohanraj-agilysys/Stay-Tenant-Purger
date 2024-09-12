@@ -34,25 +34,45 @@ public class MainService {
         Map<String, Object> combinedResponse = new HashMap<>();
 
         try {
-            Future<ResponseEntity> mongoFuture = executorService.submit(() -> {
-                mongoController.clearDataInLocal(env);
-                mongoController.addTenantInCache(tenant, env);
-                return mongoController.startDeleting(env, false);
-            });
+            Future<ResponseEntity> mongoFuture = null;
+            try {
+                mongoFuture = executorService.submit(() -> {
+                    mongoController.clearDataInLocal(env);
+                    mongoController.addTenantInCache(tenant, env);
+                    return mongoController.startDeleting(env, false);
+                });
+            } catch (Exception e) {
+                combinedResponse.put("mongoResponse",e.getMessage());
+            }
 
-            Future<Map<String, Integer>> postgresFuture = executorService.submit(() -> {
-                return postgresController.deleteTenant(env, tenant.getTenant().stream().toList());
-            });
+            Future<Map<String, Integer>> postgresFuture = null;
+            try {
+                postgresFuture = executorService.submit(() -> {
+                    return postgresController.deleteTenant(env, tenant.getTenant().stream().toList());
+                });
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
 
-            Future<Map<String, String>> esFuture = executorService.submit(() -> {
-                return esController.deleteTenant(env, tenant.getTenant().stream().toList());
-            });
+            Future<Map<String, String>> esFuture = null;
+            try {
+                esFuture = executorService.submit(() -> {
+                    return esController.deleteTenant(env, tenant.getTenant().stream().toList());
+                });
+            } catch (Exception e) {
+                combinedResponse.put("esResponse", e.getMessage());
+            }
 
             // Combine results
             combinedResponse.put("mongoResponse", mongoFuture.get().getBody());
-            combinedResponse.put("postgresResponse", postgresFuture.get());
             combinedResponse.put("esResponse", esFuture.get());
-
+            try {
+                combinedResponse.put("postgresResponse", postgresFuture.get());
+            } catch (InterruptedException e) {
+               combinedResponse.put("postgresResponse",e.getMessage());
+            } catch (ExecutionException e) {
+                combinedResponse.put("postgresResponse",e.getMessage());
+            }
         } catch (InterruptedException | ExecutionException e) {
             logger.error("Error while deleting tenant: {}", e.getMessage());
             Thread.currentThread().interrupt(); // Restore interrupted status
