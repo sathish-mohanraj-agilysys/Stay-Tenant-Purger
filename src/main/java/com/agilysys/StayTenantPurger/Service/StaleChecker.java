@@ -35,8 +35,11 @@ public class StaleChecker {
         MongoTemplate mongoTemplate = mongoFactory.getTemplate(env);
         mongoPathFactory.parallelStream().forEach(x -> {
                     try {
-                        if (x.getTenantPath() != null || (x.getTenantPath() == ""))
-                            totalTenants.addAll(mongoTemplate.getCollection(x.getName()).distinct(x.getTenantPath(), String.class).into(new HashSet<String>()));
+                        if (((x.getTenantPath() != null || (x.getTenantPath() == ""))&&!x.getName().equalsIgnoreCase("auditCommits"))){
+                            HashSet<String> tenantIds = mongoTemplate.getCollection(x.getName()).distinct(x.getTenantPath(), String.class).into(new HashSet<String>());
+                            totalTenants.addAll(tenantIds);
+                        }
+
                         else logger.error("No tenant path details or distinct tenants found  for {} collection ", x.getName());
                     } catch (Exception e) {
                         logger.error("Error happened {}   ->" + e.getMessage(), x.getName());
@@ -84,7 +87,7 @@ public class StaleChecker {
         if (str == null) {
             return false;
         }
-        boolean isvalid=!str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0");
+        boolean isvalid=!str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0")&&!str.equals("null");
         if(!isvalid){
             logger.info("[{}] Skipping the tenant: {}",Status.FAILED,str);
         }
@@ -98,7 +101,8 @@ public class StaleChecker {
            }
        }
        catch (Exception e){
-           logger.error("Error happened during the stale checker"+e.getMessage());
+           logger.error("Error happened during the stale checker --->"+e.getMessage());
+           System.out.println();
        }
     }
 }

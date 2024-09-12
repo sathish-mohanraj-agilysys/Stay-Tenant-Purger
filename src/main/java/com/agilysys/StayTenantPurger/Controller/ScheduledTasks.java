@@ -32,9 +32,9 @@ public class ScheduledTasks {
         logger.info("Daily Task initiated");
         Arrays.stream(env).forEach(env -> {
             Tenant tenant = new Tenant();
-//            tenant.setTenant(staleChecker.checkTenants(env, false));
-//            tenant.setProperty(Set.of());
-//            mainController.startDeletingSync(tenant, env);
+            tenant.setTenant(staleChecker.checkTenants(env, false));
+            tenant.setProperty(Set.of());
+            mainController.startDeletingSync(tenant, env);
             logger.info("The {} environment cleaned up", env);
         });
     }
