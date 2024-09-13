@@ -3,6 +3,7 @@ package com.agilysys.StayTenantPurger.Service;
 import com.agilysys.StayTenantPurger.Config.DataLoader;
 import com.agilysys.StayTenantPurger.Config.MongoFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
+import com.agilysys.StayTenantPurger.Util.Status;
 import com.agilysys.StayTenantPurger.modal.DAO.CollectionPath;
 import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
 import com.mongodb.client.MongoCursor;
@@ -129,6 +130,15 @@ public class StayMongoDeleteService {
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
         } catch (IOException e) {
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
+        try {
+            if(isToDeleteCore){
+                logger.info("[{}] Deleting in the core", Status.STARTED);
+                coreDeleteSerive.deleteTenant(tenantToDelete);
+                logger.info("[{}] Deleting in the core", Status.COMPLETED);
+            }
+        } catch (Exception e) {
+          logger.error(e.getMessage());
         }
 
         try {
