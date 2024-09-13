@@ -207,7 +207,8 @@ public class StayMongoDeleteService {
             logger.error("The collection size mismatch found!, {} collections found in configuration file and {} collections found in the mongodb", mongoPathFactory.size(), getAllCollections(env).size());
         }
         Tenant finalTenantTemp = tenantTemp;
-        Set<String> taskRemaining = mongoPathFactory.stream().map(CollectionPath::getName).collect(Collectors.toSet());
+        Set<String> taskRemaining = ConcurrentHashMap.newKeySet();
+       taskRemaining.addAll(mongoPathFactory.stream().map(CollectionPath::getName).collect(Collectors.toSet()));
         mongoPathFactory.parallelStream().forEach(mongoCollection -> {
             Query query = mongoPathFactory.querryBuilder.build(mongoCollection, finalTenantTemp);
             Path outputPath = CLONING_PATH.resolve(mongoCollection.getName() + ".bson");
