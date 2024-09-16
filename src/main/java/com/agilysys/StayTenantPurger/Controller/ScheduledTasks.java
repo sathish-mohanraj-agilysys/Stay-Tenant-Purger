@@ -1,7 +1,11 @@
 package com.agilysys.StayTenantPurger.Controller;
 
 import com.agilysys.StayTenantPurger.Service.StaleChecker;
+import com.agilysys.StayTenantPurger.modal.DAO.StaleCron;
+import com.agilysys.StayTenantPurger.Util.Status;
 import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +13,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Set;
 
 @Component
@@ -19,17 +25,29 @@ public class ScheduledTasks {
     @Autowired
     private StaleChecker staleChecker;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private String[] env = new String[]{"005"};
+    private StaleCron staleCron;
+    private ArrayList<String> environments;
+    private ObjectMapper objectMapper=new ObjectMapper();
 
     @PostConstruct
-    private void init() {
+    private void init() throws IOException {
+        if (Paths.get(System.getProperty("user.dir"), "staleCron.json").toFile().exists()) {
+            logger.info("[{}] Stale configuration file found", Status.FOUND);
+            staleCron = objectMapper.readValue(Paths.get(System.getProperty("user.dir"), "staleCron.json").toFile(), new TypeReference<StaleCron>() {});
+            environments = staleCron.getEnvironments();
+        } else {
+            environments = new ArrayList<>();
+            environments.add("005");
+        }
+
+
         logger.info("[{]] Automation environment cleanup");
     }
 
     @Scheduled(cron = "0 */5 * * * ?")
     public void weeklyTaskinitiated() {
         logger.info("Daily Task initiated");
-        Arrays.stream(env).forEach(env -> {
+        environments.forEach(env -> {
             Tenant tenant = new Tenant();
             tenant.setTenant(staleChecker.checkTenants(env, false));
             tenant.setProperty(Set.of());
