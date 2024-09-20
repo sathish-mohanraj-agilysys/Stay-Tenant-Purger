@@ -5,6 +5,7 @@ import com.agilysys.StayTenantPurger.Controller.MongoController;
 import com.agilysys.StayTenantPurger.Controller.PostgresController;
 import com.agilysys.StayTenantPurger.Util.Status;
 import com.agilysys.StayTenantPurger.modal.DAO.Tenant;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,13 @@ public class MainService {
         } finally {
             executorService.shutdown();
         }
-        logger.info("TOTAL_DELETION_COMPLETED {}",combinedResponse);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String jsonResponse = objectMapper.writeValueAsString(combinedResponse);
+            logger.info("TOTAL_DELETION_COMPLETED {}", jsonResponse);
+        } catch (Exception e) {
+            logger.error("Error converting combinedResponse to JSON", e);
+        }
 
         return combinedResponse;
     }
