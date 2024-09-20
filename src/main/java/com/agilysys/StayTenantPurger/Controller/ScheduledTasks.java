@@ -26,7 +26,6 @@ public class ScheduledTasks {
     private StaleChecker staleChecker;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private StaleCron staleCron;
-    private ArrayList<String> environments;
     private ObjectMapper objectMapper=new ObjectMapper();
 
     @PostConstruct
@@ -39,7 +38,7 @@ public class ScheduledTasks {
         }
 
 
-        logger.info("Automation environment cleanup ENABLED for "+environments);
+        logger.info("Automation environment cleanup ENABLED for "+staleCron.getEnvironments());
     }
 
     @Scheduled(cron = "0 */5 * * * ?")
@@ -47,7 +46,7 @@ public class ScheduledTasks {
         logger.info("Daily Task initiated");
         staleCron.getEnvironments().forEach(env -> {
             Tenant tenant = new Tenant();
-            tenant.setTenant(staleChecker.checkTenants(env, staleCron.isAutomationTenantsIncluded()));
+            tenant.setTenant(staleChecker.checkTenants(env, staleCron.getIsAutomationTenantsIncluded()));
             tenant.setProperty(Set.of());
             logger.info("[CRON DELETION STARTED] FOR THE ENV {} WITH {} TENANTS {} PROPERTIES",env,tenant.getTenant(),tenant.getProperty());
             mainController.startDeletingSync(tenant, env);
