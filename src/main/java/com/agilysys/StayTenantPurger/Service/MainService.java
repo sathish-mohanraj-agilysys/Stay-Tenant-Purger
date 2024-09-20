@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,9 +30,12 @@ public class MainService {
     PostgresController postgresController;
 
     public Map<String, Object> completeDeleteTenant(Tenant tenant, String env) {
-        if(tenant.getTenant().isEmpty())logger.error("[{}] NUll data present in the deletion ", Status.FAILED);
+        if(tenant.getTenant().isEmpty()){
+            logger.error("[{}] NUll data present in the deletion ", Status.FAILED);
+            return null;
+        }
         ExecutorService executorService = Executors.newFixedThreadPool(5);
-        Map<String, Object> combinedResponse = new HashMap<>();
+        Map<String, Object> combinedResponse = new ConcurrentHashMap<>();
 
         try {
             Future<ResponseEntity> mongoFuture = null;

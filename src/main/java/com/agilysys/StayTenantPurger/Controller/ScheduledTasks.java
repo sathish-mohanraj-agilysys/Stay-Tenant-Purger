@@ -51,6 +51,7 @@ public class ScheduledTasks {
             Tenant tenant = new Tenant();
             tenant.setTenant(staleChecker.checkTenants(env, false));
             tenant.setProperty(Set.of());
+            logger.info("[CRON DELETION STARTED] FOR THE ENV {} WITH {} TENANTS {} PROPERTIES",env,tenant.getTenant(),tenant.getProperty());
             mainController.startDeletingSync(tenant, env);
             logger.info("The {} environment cleaned up", env);
         });
