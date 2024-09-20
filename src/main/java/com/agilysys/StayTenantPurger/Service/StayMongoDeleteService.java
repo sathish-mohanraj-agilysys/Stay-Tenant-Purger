@@ -65,6 +65,7 @@ public class StayMongoDeleteService {
             temp.getTenant().addAll(tenant.getTenant());
             temp.getProperty().addAll(tenant.getProperty());
             dataLoader.writeDataIntoCacheFile(env, temp);
+            logger.info("[{}] New  {} tenants and {} property in {} environments cache",Status.ADDED,tenant.getTenant(),tenant.getProperty(),env);
             return temp.toString();
         } catch (IOException e) {
             return String.format("Caching not found for the %s environment: %s", env, e.getMessage());
@@ -97,19 +98,19 @@ public class StayMongoDeleteService {
                     DeleteResult deleteResult;
                     do{
                         count++;
-                            logger.info("Going to start {} batch deleting in {} collection" ,count,mongoCollection.getName());
+                            logger.debug("Going to start {} batch deleting in {} collection" ,count,mongoCollection.getName());
                              deleteResult = mongoTemplate.remove(query, Object.class, mongoCollection.getName());
-                            logger.info("Deleted {} documents  in {} batch  in {} collection" ,deleteResult.getDeletedCount(),count,mongoCollection.getName());
+                            logger.debug("Deleted {} documents  in {} batch  in {} collection" ,deleteResult.getDeletedCount(),count,mongoCollection.getName());
                             deletedCount += (int) deleteResult.getDeletedCount();
                     } while (deleteResult.getDeletedCount()==BATCH_SIZE);
 
                     taskRemaining.remove(mongoCollection.getName());
                     if (deletedCount == 0) {
-                        logger.info("No documents found for the {}", mongoCollection.getName());
+                        logger.debug("No documents found for the {}", mongoCollection.getName());
                     } else {
-                        logger.info("Total {} documents deleted in the {} collection", deletedCount, mongoCollection.getName());
+                        logger.debug("Total {} documents deleted in the {} collection", deletedCount, mongoCollection.getName());
                     }
-                    logger.info("Remaining collections are {}", taskRemaining);
+                    logger.debug("Remaining collections are {}", taskRemaining);
                     return deletedCount;
                 };
                 futureResults.put(mongoCollection.getName(), executorService.submit(task));
@@ -125,6 +126,7 @@ public class StayMongoDeleteService {
             }
 
             executorService.shutdown();
+            logger.info("[{}] {} ","MONGO_DELETED_OUTPUT",deletedOut );
 
         } catch (FileNotFoundException e) {
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
@@ -133,9 +135,9 @@ public class StayMongoDeleteService {
         }
         try {
             if(isToDeleteCore){
-                logger.info("[{}] Deleting in the core", Status.STARTED);
+                logger.debug("[{}] Deleting in the core", Status.STARTED);
                 coreDeleteSerive.deleteTenant(tenantToDelete);
-                logger.info("[{}] Deleting in the core", Status.COMPLETED);
+                logger.debug("[{}] Deleting in the core", Status.COMPLETED);
             }
         } catch (Exception e) {
           logger.error(e.getMessage());
@@ -146,9 +148,9 @@ public class StayMongoDeleteService {
             backupTenant.getTenant().addAll(tenantToDelete.getTenant());
             backupTenant.getProperty().addAll(tenantToDelete.getProperty());
             dataLoader.writeDataIntoBackupFile(env, backupTenant);
-            logger.info("Deleted details are successfully backed up for the {} environment", env);
+            logger.debug("Deleted details are successfully backed up for the {} environment", env);
             dataLoader.writeDataIntoCacheFile(env, new Tenant());
-            logger.info("Local Cache is successfully cleaned for {} environment", env);
+            logger.debug("Local Cache is successfully cleaned for {} environment", env);
         } catch (Exception e) {
             logger.error("Error in backup for {} environment", env);
         }

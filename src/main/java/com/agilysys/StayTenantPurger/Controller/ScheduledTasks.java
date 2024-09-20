@@ -41,7 +41,7 @@ public class ScheduledTasks {
         }
 
 
-        logger.info("[{]] Automation environment cleanup");
+        logger.info("Automation environment cleanup ENABLED for "+environments);
     }
 
     @Scheduled(cron = "0 */5 * * * ?")
