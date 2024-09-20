@@ -47,6 +47,7 @@ public class ElasticDeleteService {
             });
             esDeletedData.put(tenant,singleTenantESData);
         });
+        logger.debug("ELASTIC_SEARCH_DELETED_OUTPUT {}",esDeletedData);
         return esDeletedData;
     }
 

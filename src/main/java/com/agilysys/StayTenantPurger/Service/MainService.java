@@ -83,6 +83,7 @@ public class MainService {
         } finally {
             executorService.shutdown();
         }
+        logger.info("TOTAL_DELETION_COMPLETED {}",combinedResponse);
 
         return combinedResponse;
     }

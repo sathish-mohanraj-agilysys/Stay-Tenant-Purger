@@ -126,7 +126,7 @@ public class StayMongoDeleteService {
             }
 
             executorService.shutdown();
-            logger.info("[{}] {} ","MONGO_DELETED_OUTPUT",deletedOut );
+            logger.debug("[{}] {} ","MONGO_DELETED_OUTPUT",deletedOut );
 
         } catch (FileNotFoundException e) {
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
