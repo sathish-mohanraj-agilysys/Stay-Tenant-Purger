@@ -97,7 +97,7 @@ public class PostgressDeleteService {
             logger.debug("[{}] None of Table has TenantId", Status.RESULT);
         } else {
             logger.debug("[{}] Following Table has tenantId", Status.RESULT);
-            tablesWithoutTenantId.forEach(System.out::println);
+            tablesWithoutTenantId.forEach(x->logger.debug(x));
         }
         return tablesWithoutTenantId;
     }
