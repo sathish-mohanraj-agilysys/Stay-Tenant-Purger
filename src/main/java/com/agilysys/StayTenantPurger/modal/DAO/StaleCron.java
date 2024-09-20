@@ -14,4 +14,5 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class StaleCron {
     ArrayList<String> environments=new ArrayList<>();
+    boolean isAutomationTenantsIncluded;
 }

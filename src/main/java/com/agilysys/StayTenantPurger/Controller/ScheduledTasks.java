@@ -34,10 +34,8 @@ public class ScheduledTasks {
         if (Paths.get(System.getProperty("user.dir"), "staleCron.json").toFile().exists()) {
             logger.info("[{}] Stale configuration file found", Status.FOUND);
             staleCron = objectMapper.readValue(Paths.get(System.getProperty("user.dir"), "staleCron.json").toFile(), new TypeReference<StaleCron>() {});
-            environments = staleCron.getEnvironments();
         } else {
-            environments = new ArrayList<>();
-            environments.add("005");
+           staleCron=new StaleCron(new ArrayList<>(),false);
         }
 
 
@@ -47,9 +45,9 @@ public class ScheduledTasks {
     @Scheduled(cron = "0 */5 * * * ?")
     public void weeklyTaskinitiated() {
         logger.info("Daily Task initiated");
-        environments.forEach(env -> {
+        staleCron.getEnvironments().forEach(env -> {
             Tenant tenant = new Tenant();
-            tenant.setTenant(staleChecker.checkTenants(env, false));
+            tenant.setTenant(staleChecker.checkTenants(env, staleCron.isAutomationTenantsIncluded()));
             tenant.setProperty(Set.of());
             logger.info("[CRON DELETION STARTED] FOR THE ENV {} WITH {} TENANTS {} PROPERTIES",env,tenant.getTenant(),tenant.getProperty());
             mainController.startDeletingSync(tenant, env);
