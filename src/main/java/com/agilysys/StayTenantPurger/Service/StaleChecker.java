@@ -1,7 +1,6 @@
 package com.agilysys.StayTenantPurger.Service;
 
 import com.agilysys.StayTenantPurger.Config.MongoFactory;
-import com.agilysys.StayTenantPurger.Factory.MongoTemplateFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
 import com.agilysys.StayTenantPurger.Util.Status;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,20 +26,19 @@ public class StaleChecker {
     private MongoPathFactory mongoPathFactory;
     @Autowired
     private MongoFactory mongoFactory;
-   private  Set<String> totalTenants = new HashSet<>();
-   private  Set<String> staleTenants = new HashSet<>();
+    private Set<String> totalTenants = new HashSet<>();
+    private Set<String> staleTenants = new HashSet<>();
 
-    public Set<String> checkTenants(String env,boolean includeAutomationTenant) {
+    public Set<String> checkTenants(String env, boolean includeAutomationTenant) {
 
         MongoTemplate mongoTemplate = mongoFactory.getTemplate(env);
         mongoPathFactory.parallelStream().forEach(x -> {
                     try {
-                        if (((x.getTenantPath() != null || (x.getTenantPath() == ""))&&!x.getName().equalsIgnoreCase("auditCommits"))){
+                        if (((x.getTenantPath() != null || (x.getTenantPath() == "")) && !x.getName().equalsIgnoreCase("auditCommits"))) {
                             HashSet<String> tenantIds = mongoTemplate.getCollection(x.getName()).distinct(x.getTenantPath(), String.class).into(new HashSet<String>());
                             totalTenants.addAll(tenantIds);
-                        }
-
-                        else logger.error("No tenant path details or distinct tenants found  for {} collection ", x.getName());
+                        } else
+                            logger.error("No tenant path details or distinct tenants found  for {} collection ", x.getName());
                     } catch (Exception e) {
                         logger.error("Error happened {}   ->" + e.getMessage(), x.getName());
                     }
@@ -65,14 +63,14 @@ public class StaleChecker {
                 ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
-                logger.info("[{}] -> TenantId:{}; TenantName:{}", Status.RESULT,tenant, jsonNode.path("name"));
+                logger.debug("[{}] -> TenantId:{}; TenantName:{}", Status.RESULT, tenant, jsonNode.path("name"));
                 if (jsonNode.path("name").asText().contains("stayTenant") && includeAutomationTenant) {
                     this.addTenant(tenant);
                 }
 
             } catch (Exception e) {
-                System.out.println(e.getMessage());
-                if (isValid(tenant)){
+                logger.debug("NOT FOUND: {} tenantId in the core [ ERROR: {}]", tenant, e.getMessage());
+                if (isValid(tenant)) {
                     this.addTenant(tenant);
                 }
             }
@@ -87,22 +85,21 @@ public class StaleChecker {
         if (str == null) {
             return false;
         }
-        boolean isvalid=!str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0")&&!str.equals("null");
-        if(!isvalid){
-            logger.info("[{}] Skipping the tenant: {}",Status.FAILED,str);
+        boolean isvalid = !str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0") && !str.equals("null");
+        if (!isvalid) {
+            logger.info("[{}] Skipping the tenant: {}", Status.FAILED, str);
         }
-        return isvalid ;
+        return isvalid;
     }
 
-    private void addTenant(String tenant){
-       try{
-           if(Integer.parseInt(tenant)>0&&Integer.parseInt(tenant)<700000) {
-               staleTenants.add(tenant);
-           }
-       }
-       catch (Exception e){
-           logger.error("Error happened during the stale checker --->"+e.getMessage());
-           System.out.println();
-       }
+    private void addTenant(String tenant) {
+        try {
+            if (Integer.parseInt(tenant) > 0 && Integer.parseInt(tenant) < 700000) {
+                staleTenants.add(tenant);
+            }
+        } catch (Exception e) {
+            logger.error("Error happened during the stale checker --->" + e.getMessage());
+            System.out.println();
+        }
     }
 }

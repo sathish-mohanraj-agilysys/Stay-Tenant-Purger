@@ -129,9 +129,9 @@ public class MongoController implements StayDeleteInterface {
         try {
             if (!Files.exists(path)) {
                 Files.createDirectories(path);
-                System.out.println("Directory created: " + path);
+                logger.debug("Directory created: " + path);
             } else {
-                System.out.println("Directory already exists: " + path);
+                logger.debug("Directory already exists: " + path);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
