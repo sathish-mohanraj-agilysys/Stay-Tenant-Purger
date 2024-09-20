@@ -68,15 +68,16 @@ public class PostgressDeleteService {
         Set<String> remainingTask=new ConcurrentSkipListSet<>(tableNames);
         Map<String, Integer> tableCount = new ConcurrentHashMap<>();
         tableNames.parallelStream().forEach(tableName -> {
-            logger.info("Deleting on the table " + tableName);
+            logger.debug("Deleting on the table " + tableName);
             JdbcTemplate jdbcTemplate = getJdbcTemplate(env);
             String sql = "DELETE FROM " + tableName + " WHERE tenant_id IN (" + tenantIdList + ")";
             int deletedCount = jdbcTemplate.update(sql);
             tableCount.put(tableName, deletedCount);
             remainingTask.remove(tableName);
-            logger.info("[{}-DELETE_TABLE]{}", Status.REMAINING, remainingTask.toString());
-            logger.info("Deleted " + deletedCount + " rows from table " + tableName);
+            logger.debug("[{}-DELETE_TABLE]{}", Status.REMAINING, remainingTask.toString());
+            logger.debug("Deleted " + deletedCount + " rows from table " + tableName);
         });
+        logger.info("[COMPLETED THE DELETION IN THE POSTGRESS]");
         return tableCount;
     }
 
@@ -93,9 +94,9 @@ public class PostgressDeleteService {
 
         // Print results
         if (tablesWithoutTenantId.isEmpty()) {
-            logger.info("[{}] None of Table has TenantId", Status.RESULT);
+            logger.debug("[{}] None of Table has TenantId", Status.RESULT);
         } else {
-            logger.info("[{}] Following Table has tenantId", Status.RESULT);
+            logger.debug("[{}] Following Table has tenantId", Status.RESULT);
             tablesWithoutTenantId.forEach(System.out::println);
         }
         return tablesWithoutTenantId;
