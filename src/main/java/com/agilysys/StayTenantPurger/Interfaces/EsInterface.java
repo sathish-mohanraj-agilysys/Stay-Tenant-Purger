@@ -13,5 +13,5 @@ public interface EsInterface {
     public Object getIndexes(@PathVariable("environment") String env);
 
     @PostMapping("/deleteTenant/env/{environment}")
-    public Map<String, String> deleteTenant(@PathVariable("environment") String env, @RequestBody List<String> tenants);
+    public Map<String, Map<String, String>> deleteTenant(@PathVariable("environment") String env, @RequestBody List<String> tenants);
 }

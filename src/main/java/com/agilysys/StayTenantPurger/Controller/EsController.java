@@ -21,7 +21,7 @@ public class EsController implements EsInterface {
     }
 
     @Override
-    public Map<String, String> deleteTenant(String env, List<String> tenants) {
+    public Map<String, Map<String, String>> deleteTenant(String env, List<String> tenants) {
         return elasticDeleteService.startDeletingTenants(env, tenants);
     }
 }

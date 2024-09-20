@@ -54,7 +54,7 @@ public class MainService {
                 logger.error(e.getMessage());
             }
 
-            Future<Map<String, String>> esFuture = null;
+            Future<Map<String, Map<String, String>>> esFuture = null;
             try {
                 esFuture = executorService.submit(() -> {
                     return esController.deleteTenant(env, tenant.getTenant().stream().toList());
