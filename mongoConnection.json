@@ -51,32 +51,32 @@
   },
   {
     "envName": "qa",
-    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qa-01.rj1hi.mongodb.net/rGuestStay-aks-stay-qa",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qa-01.rj1hi.mongodb.net/rGuestStay-aks-stay-qa?readPreference=primary&ssl=true",
     "dbName": "rGuestStay-aks-stay-qa"
   },
   {
     "envName": "qa02",
-    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qa-02.rj1hi.mongodb.net/rGuestStay-aks-stay-qa-02",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qa-02.rj1hi.mongodb.net/rGuestStay-aks-stay-qa-02?readPreference=primary&ssl=true",
     "dbName": "rGuestStay-aks-stay-qa-02"
   },
   {
     "envName": "qa03",
-    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qa-03.rj1hi.mongodb.net/rGuestStay-aks-stay-qa-03",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qa-03.rj1hi.mongodb.net/rGuestStay-aks-stay-qa-03?readPreference=primary&ssl=true",
     "dbName": "rGuestStay-aks-stay-qa-03"
   },
   {
     "envName": "qaint",
-    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qaint-01.rj1hi.mongodb.net/rGuestStay-aks-stay-qaint",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-qaint-01.rj1hi.mongodb.net/rGuestStay-aks-stay-qaint?readPreference=primary&ssl=true",
     "dbName": "rGuestStay-aks-stay-qaint"
   },
   {
     "envName": "release",
-    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-release-01.rj1hi.mongodb.net/rGuestStay-aks-stay-release",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-release-01.rj1hi.mongodb.net/rGuestStay-aks-stay-release?readPreference=primary&ssl=true",
     "dbName": "rGuestStay-aks-stay-release"
   },
   {
     "envName": "ui",
-    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-automation.rj1hi.mongodb.net/rGuestStay",
+    "url": "mongodb+srv://stay-services:RhxKQK7v1WLtju2S@rguest-stay-automation.rj1hi.mongodb.net/rGuestStay?readPreference=primary&ssl=true",
     "dbName": "rGuestStay"
   },
   {
