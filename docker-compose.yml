@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  qaint-purger:
+    image: purger:latest
+    environment:
+      - CRONENV=qaint
+      - INCLUDE_AUTOMATION_TENANT=false
+    ports:
+      - "8050:8080"
+    networks:
+      - purger-network
+
+  qa-purger:
+    image: purger:latest
+    environment:
+      - CRONENV=qa
+      - INCLUDE_AUTOMATION_TENANT=false
+    ports:
+      - "8051:8080"
+    networks:
+      - purger-network
+
+  qa02-purger:
+    image: purger:latest
+    environment:
+      - CRONENV=qa02
+      - INCLUDE_AUTOMATION_TENANT=false
+    ports:
+      - "8052:8080"
+    networks:
+      - purger-network
+
+  qa03-purger:
+    image: purger:latest
+    environment:
+      - CRONENV=qa03
+      - INCLUDE_AUTOMATION_TENANT=false
+    ports:
+      - "8053:8080"
+    networks:
+      - purger-network
+
+networks:
+  purger-network:
+    driver: bridge
+
