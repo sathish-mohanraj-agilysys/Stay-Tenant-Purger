@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 
 @Component
@@ -24,21 +26,30 @@ public class ScheduledTasks {
     private MainController mainController;
     @Autowired
     private StaleChecker staleChecker;
+
+    @Value("${cronenv:not_found}")
+    private String cronEnv;
+
+    @Value("${includeAutomationTenant:false}")
+    private Boolean includeAutomationTenant;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private StaleCron staleCron;
     private ObjectMapper objectMapper=new ObjectMapper();
 
     @PostConstruct
     private void init() throws IOException {
-        if (Paths.get(System.getProperty("user.dir"), "staleCron.json").toFile().exists()) {
-            logger.info("[{}] Stale configuration file found", Status.FOUND);
-            staleCron = objectMapper.readValue(Paths.get(System.getProperty("user.dir"), "staleCron.json").toFile(), new TypeReference<StaleCron>() {});
-        } else {
-           staleCron=new StaleCron(new ArrayList<>(),false);
+
+        if (!cronEnv.equalsIgnoreCase("not_found")) {
+            staleCron = new StaleCron();
+            staleCron.setEnvironments(new ArrayList<>(Arrays.asList(cronEnv)));
+            staleCron.setIsAutomationTenantsIncluded(includeAutomationTenant);
         }
 
-
-        logger.info("Automation environment cleanup ENABLED for "+staleCron.getEnvironments());
+       if(includeAutomationTenant){
+           logger.info("Automation environment cleanup ENABLED for "+staleCron.getEnvironments()+" with automation tenants included");
+       }
+       else logger.info("Automation environment cleanup ENABLED for "+staleCron.getEnvironments());
     }
 
     @Scheduled(cron = "0 */5 * * * ?")
