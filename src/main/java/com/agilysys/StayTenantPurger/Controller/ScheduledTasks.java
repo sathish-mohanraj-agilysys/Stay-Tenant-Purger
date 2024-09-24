@@ -54,7 +54,7 @@ public class ScheduledTasks {
 
     @Scheduled(cron = "0 */5 * * * ?")
     public void weeklyTaskinitiated() {
-        logger.info("Daily Task initiated");
+        logger.info("Stale cron initiated");
         staleCron.getEnvironments().forEach(env -> {
             Tenant tenant = new Tenant();
             tenant.setTenant(staleChecker.checkTenants(env, staleCron.getIsAutomationTenantsIncluded()));
