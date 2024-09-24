@@ -1,6 +1,8 @@
 package com.agilysys.StayTenantPurger.Service;
 
 import com.agilysys.StayTenantPurger.Util.Status;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -88,18 +90,22 @@ public class PostgressDeleteService {
         List<String> tableNames = jdbcTemplate.queryForList(tableQuery, String.class);
 
         // Check if each table contains the tenant_id column
-        List<String> tablesWithoutTenantId = tableNames.parallelStream()
+        List<String> tablesWithTenantId = tableNames.parallelStream()
                 .filter(table -> hasTenantIdColumn(jdbcTemplate, table))
                 .toList();
 
         // Print results
-        if (tablesWithoutTenantId.isEmpty()) {
+        if (tablesWithTenantId.isEmpty()) {
             logger.debug("[{}] None of Table has TenantId", Status.RESULT);
         } else {
             logger.debug("[{}] Following Table has tenantId", Status.RESULT);
-            tablesWithoutTenantId.forEach(x->logger.debug(x));
+            try {
+                logger.debug("[{}] Total tables with tenantId in postgress is {}",Status.FOUND,new ObjectMapper().writeValueAsString(tablesWithTenantId));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
         }
-        return tablesWithoutTenantId;
+        return tablesWithTenantId;
     }
 
     private boolean hasTenantIdColumn(JdbcTemplate jdbcTemplate, String tableName) {

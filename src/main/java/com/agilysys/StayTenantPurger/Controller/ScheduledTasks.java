@@ -52,7 +52,7 @@ public class ScheduledTasks {
        else logger.info("Automation environment cleanup ENABLED for "+staleCron.getEnvironments());
     }
 
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 0 * * * ?")
     public void weeklyTaskinitiated() {
         logger.info("Stale cron initiated");
         staleCron.getEnvironments().forEach(env -> {

@@ -73,6 +73,7 @@ public class StayMongoDeleteService {
     }
 
     public ResponseEntity<Map<String, Integer>> deleteInMongodb(String env, boolean isToDeleteCore) {
+        logger.info("[{}] MongoDB deletion for {} environment",Status.STARTED,env);
         Set<String> collections = getAllCollections(env);
         Map<String, Integer> deletedOut;
         MongoTemplate mongoTemplate =mongoFactory.getTemplate(env);
@@ -161,7 +162,7 @@ public class StayMongoDeleteService {
     public String clearInLocal(String env) {
         try {
             dataLoader.writeDataIntoCacheFile(env, new Tenant());
-            logger.info("The tenant and property data in the local cache has been cleared for the {} environment",env);
+            logger.info("[{}] Local cache for  {} environment",Status.CLEARING,env);
             return dataLoader.readDataFromCacheFile(env).toString();
         } catch (Exception e) {
             return String.format("Error in clearing the cache for the %s environment ", env) + e;

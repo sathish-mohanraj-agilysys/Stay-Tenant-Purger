@@ -27,6 +27,7 @@ public class StaleChecker {
     private MongoPathFactory mongoPathFactory;
     @Autowired
     private MongoFactory mongoFactory;
+    @Autowired
     private ObjectMapper objectMapper;
     private Set<String> totalTenants = new HashSet<>();
     private Set<String> staleTenants = new HashSet<>();
