@@ -92,7 +92,11 @@ public class ElasticDeleteService {
                 return "http://lab-stay-aks-006-server.westus.cloudapp.azure.com:9200";
             case "007":
                 return "http://lab-stay-aks-007-server.westus.cloudapp.azure.com:9200";
-            case "qaint", "qa","qa02","qa03":
+            case "qa02":
+                return "stay-elasticsearch-qa-02.es.westus2.azure.elastic-cloud.com";
+            case "qa03":
+                return "stay-elasticsearch-qa-03.es.westus2.azure.elastic-cloud.com";
+            case "qaint", "qa":
                 return "https://78487f86271b4a9b90ba28a848826f45.westus2.azure.elastic-cloud.com";
             default:
                 return "";
@@ -103,8 +107,13 @@ public class ElasticDeleteService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/json");
         switch (env) {
-            case "qaint":
+            case "qaint","qa":
                 headers.set("Authorization", generateBasicAuth("stay-services", "flu1skew*dorn2KROX"));
+                return headers;
+            case "qa02":
+                headers.set("Authorization", generateBasicAuth("stay-services", "kNGdnZ7iNT7LnQJ"));
+            case "qa03":
+                headers.set("Authorization", generateBasicAuth("stay-services", "JvaZz7z898QeHjGk"));
                 return headers;
             default:
                 return headers;
