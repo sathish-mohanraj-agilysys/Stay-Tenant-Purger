@@ -92,8 +92,7 @@ public class ElasticDeleteService {
                 return "http://lab-stay-aks-006-server.westus.cloudapp.azure.com:9200";
             case "007":
                 return "http://lab-stay-aks-007-server.westus.cloudapp.azure.com:9200";
-            case "qaint":
-            case "qa":
+            case "qaint", "qa","qa02","qa03":
                 return "https://78487f86271b4a9b90ba28a848826f45.westus2.azure.elastic-cloud.com";
             default:
                 return "";
