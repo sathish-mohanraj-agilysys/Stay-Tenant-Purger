@@ -3,6 +3,7 @@ package com.agilysys.StayTenantPurger.Service;
 import com.agilysys.StayTenantPurger.Config.MongoFactory;
 import com.agilysys.StayTenantPurger.Util.MongoPathFactory;
 import com.agilysys.StayTenantPurger.Util.Status;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class StaleChecker {
     private MongoPathFactory mongoPathFactory;
     @Autowired
     private MongoFactory mongoFactory;
+    private ObjectMapper objectMapper;
     private Set<String> totalTenants = new HashSet<>();
     private Set<String> staleTenants = new HashSet<>();
 
@@ -55,7 +57,13 @@ public class StaleChecker {
 
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        logger.info("Total Tenants found out for the {} environment ->{}", env, totalTenants);
+        String totalTenant;
+        try {
+            totalTenant = objectMapper.writeValueAsString(totalTenants);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        logger.debug("Total Tenants found out for the {} environment ->{}", env, totalTenant);
         totalTenants.parallelStream().forEach(tenant -> {
             String url = "https://aks-core-qaint.hospitalityrevolution.com/user-service/tenant/tenants/" + tenant;
             RestTemplate restTemplate = new RestTemplate();
@@ -75,7 +83,11 @@ public class StaleChecker {
                 }
             }
         });
-        logger.info("Stale tenants found out is" + staleTenants.toString());
+        try {
+            logger.info("Stale tenants found out is {}" ,  objectMapper.writeValueAsString(staleTenants));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         return staleTenants;
 
@@ -87,7 +99,7 @@ public class StaleChecker {
         }
         boolean isvalid = !str.equals("default") && !str.equalsIgnoreCase("Default") && !str.equals("0") && !str.equals("null");
         if (!isvalid) {
-            logger.info("[{}] Skipping the tenant: {}", Status.FAILED, str);
+            logger.info("[{}] Tenant from the stale count: {}", Status.SKIPPING, str);
         }
         return isvalid;
     }
@@ -98,7 +110,7 @@ public class StaleChecker {
                 staleTenants.add(tenant);
             }
         } catch (Exception e) {
-            logger.error("Error happened during the stale checker --->" + e.getMessage());
+            logger.error("Tenant parsing failed for {} with error {}" ,tenant, e.getMessage());
             System.out.println();
         }
     }

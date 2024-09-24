@@ -59,6 +59,10 @@ public class ScheduledTasks {
             Tenant tenant = new Tenant();
             tenant.setTenant(staleChecker.checkTenants(env, staleCron.getIsAutomationTenantsIncluded()));
             tenant.setProperty(Set.of());
+            if (tenant.getTenant().isEmpty()){
+                logger.info("[{}] Stale Deletion due to none of the Stale tenants found in {} environment",Status.STOPPING_PROCESS,env);
+                return;
+            }
             logger.info("[CRON DELETION STARTED] FOR THE ENV {} WITH {} TENANTS {} PROPERTIES",env,tenant.getTenant(),tenant.getProperty());
             mainController.startDeletingSync(tenant, env);
             logger.info("The {} environment cleaned up", env);
