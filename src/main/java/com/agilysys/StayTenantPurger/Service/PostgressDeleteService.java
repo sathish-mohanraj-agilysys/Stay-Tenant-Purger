@@ -21,11 +21,16 @@ import static com.agilysys.StayTenantPurger.Config.PostgresFactory.getJdbcTempla
 @Service
 public class PostgressDeleteService {
     private static final Logger logger = LoggerFactory.getLogger(PostgressDeleteService.class);
+    private static List<String> tables;
 
     public List<String> checkForTenantId(String env) {
-        logger.info("[{}-{}] Tenant column in all Postgress table", Status.CHECKING,env);
+        if(tables.isEmpty()){
+            logger.info("[{}-{}] Tenant column in all Postgress table", Status.CHECKING,env);
+            tables=checkTablesForTenantId(getJdbcTemplate(env));
+        }
 
-        return checkTablesForTenantId(getJdbcTemplate(env));
+
+        return tables;
     }
 
     public Map<String, Integer> countDocuments(String env, List<String> tenantIds) {
