@@ -6,6 +6,9 @@ services:
     environment:
       - CRONENV=qaint
       - INCLUDE_AUTOMATION_TENANT=false
+      - logging.level.com.agilysys.StayTenantPurger.Service.StayMongoDeleteService=INFO
+      - logging.level.com.agilysys.StayTenantPurger.Service.PostgressDeleteService=INFO
+      - logging.level.com.agilysys.StayTenantPurger.Service.ElasticDeleteService=INFO
     ports:
       - "8050:8080"
     networks:
@@ -16,6 +19,9 @@ services:
     environment:
       - CRONENV=qa
       - INCLUDE_AUTOMATION_TENANT=false
+      - logging.level.com.agilysys.StayTenantPurger.Service.StayMongoDeleteService=INFO
+      - logging.level.com.agilysys.StayTenantPurger.Service.PostgressDeleteService=INFO
+      - logging.level.com.agilysys.StayTenantPurger.Service.ElasticDeleteService=INFO
     ports:
       - "8051:8080"
     networks:
@@ -26,6 +32,9 @@ services:
     environment:
       - CRONENV=qa02
       - INCLUDE_AUTOMATION_TENANT=false
+      - logging.level.com.agilysys.StayTenantPurger.Service.StayMongoDeleteService=INFO
+      - logging.level.com.agilysys.StayTenantPurger.Service.PostgressDeleteService=INFO
+      - logging.level.com.agilysys.StayTenantPurger.Service.ElasticDeleteService=INFO
     ports:
       - "8052:8080"
     networks:
@@ -36,6 +45,9 @@ services:
     environment:
       - CRONENV=qa03
       - INCLUDE_AUTOMATION_TENANT=false
+      - logging.level.com.agilysys.StayTenantPurger.Service.StayMongoDeleteService=INFO
+      - logging.level.com.agilysys.StayTenantPurger.Service.PostgressDeleteService=INFO
+      - logging.level.com.agilysys.StayTenantPurger.Service.ElasticDeleteService=INFO
     ports:
       - "8053:8080"
     networks:

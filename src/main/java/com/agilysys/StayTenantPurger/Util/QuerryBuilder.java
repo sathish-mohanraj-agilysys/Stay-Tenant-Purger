@@ -20,13 +20,14 @@ public class QuerryBuilder {
         Criteria criteria = null;
         if (mongoCollection.getName().equalsIgnoreCase("config") || mongoCollection.getName().equalsIgnoreCase("configEvents")) {
             assert tenant != null;
-            Set<String> tenantAndProperty = tenant.getProperty();
-            tenantAndProperty.addAll(tenant.getTenant());
+            Set<String> tenantAndProperty=tenant.getTenant();
             if (tenantAndProperty.isEmpty()) {
                 logger.info("No doucuments found for the " + mongoCollection.getName());
                criteria= Criteria.where("path").is("");
             }else {
-                String regex = tenantAndProperty.stream().collect(Collectors.joining("|"));
+                String regex = tenantAndProperty.stream()
+                        .map(ten -> String.format("tenants/%s/", ten))
+                        .collect(Collectors.joining("|"));
                 criteria = Criteria.where("path").regex(regex);
             }
 

@@ -24,9 +24,9 @@ public class PostgressDeleteService {
     private static List<String> tables;
 
     public List<String> checkForTenantId(String env) {
-        if(tables.isEmpty()){
-            logger.info("[{}-{}] Tenant column in all Postgress table", Status.CHECKING,env);
-            tables=checkTablesForTenantId(getJdbcTemplate(env));
+        if (tables.isEmpty()) {
+            logger.info("[{}-{}] Tenant column in all Postgress table", Status.CHECKING, env);
+            tables = checkTablesForTenantId(getJdbcTemplate(env));
         }
 
 
@@ -34,7 +34,7 @@ public class PostgressDeleteService {
     }
 
     public Map<String, Integer> countDocuments(String env, List<String> tenantIds) {
-        if (tenantIds.isEmpty())throw new RuntimeException("Cannot proceed Checking because request body is null");
+        if (tenantIds.isEmpty()) throw new RuntimeException("Cannot proceed Checking because request body is null");
         List<String> tableNames = checkForTenantId(env);
         Set<String> remainingTask = new ConcurrentSkipListSet<>(tableNames);
         logger.info("{} Tables found in the {} environment", tableNames.size(), env);
@@ -72,7 +72,7 @@ public class PostgressDeleteService {
         String tenantIdList = tenantIds.parallelStream()
                 .map(id -> "'" + id + "'")
                 .collect(Collectors.joining(","));
-        Set<String> remainingTask=new ConcurrentSkipListSet<>(tableNames);
+        Set<String> remainingTask = new ConcurrentSkipListSet<>(tableNames);
         Map<String, Integer> tableCount = new ConcurrentHashMap<>();
         tableNames.parallelStream().forEach(tableName -> {
             logger.debug("Deleting on the table " + tableName);
@@ -105,7 +105,7 @@ public class PostgressDeleteService {
         } else {
             logger.debug("[{}] Following Table has tenantId", Status.RESULT);
             try {
-                logger.debug("[{}] Total tables with tenantId in postgress is {}",Status.FOUND,new ObjectMapper().writeValueAsString(tablesWithTenantId));
+                logger.debug("[{}] Total tables with tenantId in postgress is {}", Status.FOUND, new ObjectMapper().writeValueAsString(tablesWithTenantId));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -122,18 +122,18 @@ public class PostgressDeleteService {
 
 
     public Map<String, String> getTotalRowCountInDb(String env) {
-        logger.info("[{}-{}] Total row count in all tables",Status.CHECKING,env);
+        logger.info("[{}-{}] Total row count in all tables", Status.CHECKING, env);
         List<String> tableNames = checkForTenantId(env);
-        Set<String> remainingTask=new ConcurrentSkipListSet<>(tableNames);
+        Set<String> remainingTask = new ConcurrentSkipListSet<>(tableNames);
         Map<String, String> rowCountMap = new ConcurrentHashMap<>();
-      tableNames.parallelStream().forEach(tableName->{
-          String countQuery = "SELECT COUNT(*) FROM " + tableName;
-          Long rowCount = getJdbcTemplate(env).queryForObject(countQuery, Long.class);
-          rowCountMap.put(tableName, String.valueOf(rowCount));
-          remainingTask.remove(tableName);
-          logger.info("[{}-TOTAL_COUNT_CHECK]{}", Status.REMAINING, remainingTask.toString());
-      });
-        logger.info("[{}-{}] Total row count in all tables",Status.COMPLETED,env);
+        tableNames.parallelStream().forEach(tableName -> {
+            String countQuery = "SELECT COUNT(*) FROM " + tableName;
+            Long rowCount = getJdbcTemplate(env).queryForObject(countQuery, Long.class);
+            rowCountMap.put(tableName, String.valueOf(rowCount));
+            remainingTask.remove(tableName);
+            logger.info("[{}-TOTAL_COUNT_CHECK]{}", Status.REMAINING, remainingTask.toString());
+        });
+        logger.info("[{}-{}] Total row count in all tables", Status.COMPLETED, env);
 
         return rowCountMap;
     }
