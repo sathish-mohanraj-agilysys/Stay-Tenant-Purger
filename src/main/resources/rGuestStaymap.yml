@@ -606,6 +606,9 @@ loyaltyHKPatterns:
  propertyId:
   - propertyId
 maintenanceServiceRequestEventStream:
+ tenantId:
+  - events
+  - propertyId
  propertyId:
   - events
   - propertyId

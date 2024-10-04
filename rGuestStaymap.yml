@@ -114,11 +114,6 @@ UpdatedRoomStatusesResponse:
   - tenantId
  propertyId:
   - propertyId
-account:
- tenantId:
-  - tenantId
- propertyId:
-  - propertyId
 accountBalanceMutex:
  tenantId:
   - _id
@@ -127,13 +122,6 @@ accountBalanceMutex:
   - _id
   - propertyId
 accountBalances:
- tenantId:
-  - _id
-  - tenantId
- propertyId:
-  - _id
-  - propertyId
-accountBalances_172675:
  tenantId:
   - _id
   - tenantId
@@ -1081,6 +1069,13 @@ maintenanceServiceRequestsCounter:
  tenantId:
   - tenantId
  propertyId:
+  - propertyId
+maintenanceServiceRequestEventStream:
+ tenantId:
+  - events
+  - propertyId
+ propertyId:
+  - events
   - propertyId
 multipleReservationResponseDomain:
  tenantId:
