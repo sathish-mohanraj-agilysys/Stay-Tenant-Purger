@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +22,7 @@ import static com.agilysys.StayTenantPurger.Config.PostgresFactory.getJdbcTempla
 @Service
 public class PostgressDeleteService {
     private static final Logger logger = LoggerFactory.getLogger(PostgressDeleteService.class);
-    private static List<String> tables;
+    private static List<String> tables=new ArrayList<>();
 
     public List<String> checkForTenantId(String env) {
         if (tables.isEmpty()) {
