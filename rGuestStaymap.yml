@@ -308,11 +308,11 @@ asyncJobResponse:
   - propertyId
 auditCommits:
  tenantId:
-  - c
-  - t
+  - ei
+  - ti
  propertyId:
-  - c
-  - p
+  - ei
+  - pi
 auditEntities:
  tenantId:
   - _id
